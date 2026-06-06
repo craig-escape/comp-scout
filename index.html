@@ -62,7 +62,7 @@
       <button id="daily-reset">↺ Reset queue</button>
       <button id="all-reset">Clear saved progress</button>
     </div>
-    <p class="small">The daily queue is deliberately short: 8 searches. Open one, check results, come back, open the next.</p>
+    <p class="small">The daily queue is deliberately short: 8 searches. Open one, check results, come back, open the next. v6.2 uses looser deadline searches so Ending Today/Tomorrow should not collapse to zero results.</p>
     <div class="status" id="status"></div>
     <div class="status" id="queueBox"></div>
   </div>
@@ -110,7 +110,7 @@
       <summary>Search strategy</summary>
       <p class="small">v6.1 removes the big intimidating 40+ search queue. It uses 8 strong searches in the daily route, with quick buttons for days when you only want hotels, tech, local prizes or hidden gems.</p>
       <ul class="small">
-        <li><strong>UK bias:</strong> UK city names, UK region parameter, obvious Australia terms excluded and original raffle/paid comping sites excluded from web searches.</li>
+        <li><strong>UK bias:</strong> UK city names, UK region parameter, obvious Australia terms excluded and original raffle/paid comping sites excluded from web searches. Deadline searches are deliberately looser so Google does not return zero results.</li>
         <li><strong>Travel:</strong> hotel, suite, spa, penthouse, retreat, glamping, cabins, boutique hotels, city breaks, cruises, rail-friendly UK cities, Blackpool, London, Edinburgh, Liverpool, York, Leeds, Sheffield, Chester and more.</li>
         <li><strong>Hidden Gems:</strong> anniversary, launch, opening, reopening, milestone, customer appreciation, new menu, rebrand and “to celebrate” giveaways from smaller local businesses.</li>
       </ul>
@@ -129,7 +129,7 @@
   function setStatus(msg){var el=document.getElementById('status');el.textContent=msg;el.className='status show'}
   function esc(str){return String(str).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;')}
 
-  var VERSION='v61';
+  var VERSION='v62';
   var IG='site:instagram.com';
   var WEB='';
   var give='("giveaway" OR "competition" OR "prize draw" OR "win")';
@@ -137,6 +137,8 @@
   var ukPlaces='(Manchester OR Liverpool OR Leeds OR York OR Sheffield OR Chester OR Blackpool OR Birmingham OR London OR Edinburgh OR Bath OR Oxford OR Cambridge OR Harrogate OR "Lake District" OR "Peak District" OR "North Wales")';
   var northPlaces='(Manchester OR Liverpool OR Leeds OR York OR Sheffield OR Chester OR Blackpool OR Birmingham OR Harrogate OR "Lake District" OR "Peak District" OR "North Wales")';
   var auNeg='-Australia -Australian -Sydney -Melbourne -Brisbane -Perth -Adelaide -Queensland -Victoria -NSW -"New South Wales" -site:.com.au -site:.au';
+  // Lighter version for deadline searches. Too many exclusions + UK terms can make Google return no results.
+  var auNegLight='-Australia -Sydney -Melbourne -Brisbane -Perth -site:.com.au';
   var noFootball='-football -"football club" -fixture -fixtures -stadium -matchday -"Premier League" -EPL -Championship -"FA Cup" -UEFA -"Manchester United" -"Manchester City" -Old Trafford -Etihad -kick-off -FC';
 
   // Original v4 paid raffle/comping-site blocklist kept for web searches.
@@ -163,13 +165,17 @@
   }}
   function dateTerm(dp){return '("'+dp.dateSlash+'" OR "'+dp.dateSlashYear+'" OR "'+dp.dateSlashShort+'" OR "'+dp.dateDash+'" OR "'+dp.dateShort+'" OR "'+dp.dateLong+'" OR "'+dp.dateLongYear+'" OR "'+dp.dateOrdinal+'")'}
 
+  function simpleDateTerm(dp){
+    // Keep deadline searches short. Google often fails when site:instagram + many OR groups + negatives + region filters are all combined.
+    return '("'+dp.dateSlash+'" OR "'+dp.dateShort+'" OR "'+dp.dateLong+'" OR "'+dp.dateOrdinal+'")';
+  }
+
   function endingSearch(date,mode){
-    var dp=dateParts(date), dates=dateTerm(dp), recent=tbs('qdr:m2');
-    var endingWords='("ends" OR "closes" OR "closing" OR "enter by" OR "entries close" OR "drawn" OR "winner announced")';
+    var dp=dateParts(date), dates=simpleDateTerm(dp), recent=tbs('qdr:m');
     if(mode==='today'){
-      return IG+' '+give+' '+auNeg+' ('+endingWords+' '+dates+' OR "ends today" OR "closes today" OR "closing today" OR "last chance" OR "final chance" OR "last day to enter" OR "entries close tonight" OR "ends tonight" OR "closes tonight" OR "winner announced tomorrow" OR "winner drawn tomorrow") '+ukSoft+recent;
+      return IG+' '+give+' ("ends today" OR "closes today" OR "last chance" OR "final chance" OR "ends tonight" OR "closes tonight" OR "entries close tonight" OR "winner announced tomorrow" OR "winner drawn tomorrow" OR '+dates+') '+auNegLight+recent;
     }
-    return IG+' '+give+' '+auNeg+' ('+endingWords+' '+dates+' OR "ends tomorrow" OR "closes tomorrow" OR "closing tomorrow" OR "last chance tomorrow" OR "winner announced" OR "winner drawn") '+ukSoft+recent;
+    return IG+' '+give+' ("ends tomorrow" OR "closes tomorrow" OR "last chance tomorrow" OR "winner announced" OR "winner drawn" OR '+dates+') '+auNegLight+recent;
   }
 
   function qTravel(){return IG+' '+give+' '+travelTerms+' '+ukPlaces+' '+auNeg+tbs('qdr:m')}

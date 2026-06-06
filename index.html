@@ -1,0 +1,354 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>Comp Scout — Giveaway Scanner (v5.1)</title>
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<style>
+  :root{
+    --fg:#111;--muted:#666;--bd:#e5e7eb;--soft:#f8fafc;--accent:#111;
+    --green:#ecfdf5;--blue:#eff6ff;--amber:#fffbeb;--pink:#fdf2f8;
+  }
+  *{box-sizing:border-box}
+  body{font-family:system-ui,-apple-system,Segoe UI,Roboto,Inter,Arial,sans-serif;max-width:1100px;margin:28px auto;padding:0 16px;line-height:1.55;color:var(--fg);background:#fff}
+  h1{font-size:1.7rem;margin:0 0 6px}
+  h2{font-size:1.15rem;margin:0 0 8px}
+  p.small,.small{font-size:.92rem;color:var(--muted);margin:.25rem 0 .8rem}
+  .card{border:1px solid var(--bd);border-radius:14px;padding:16px;margin:12px 0;box-shadow:0 1px 3px rgba(0,0,0,.04);background:#fff}
+  .workflow{background:linear-gradient(180deg,#fff,var(--soft))}
+  .row{display:flex;gap:12px;align-items:center;flex-wrap:wrap}
+  .grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(230px,1fr));gap:12px}
+  label{display:block;margin:6px 0}
+  input[type="date"],select,input[type="number"]{padding:7px 10px;font-size:1rem;border:1px solid var(--bd);border-radius:9px;background:#fff}
+  input[type="number"]{width:86px}
+  .btns{display:flex;gap:10px;flex-wrap:wrap;margin-top:10px}
+  button{padding:10px 14px;border:1px solid var(--bd);background:#fff;border-radius:11px;font-weight:700;cursor:pointer;transition:.12s transform,.12s box-shadow}
+  button:hover{transform:translateY(-1px);box-shadow:0 2px 8px rgba(0,0,0,.08)}
+  button.primary{background:#111;color:#fff;border-color:#111}
+  button.hot{background:#dc2626;color:#fff;border-color:#dc2626}
+  button.travel{background:#0f766e;color:#fff;border-color:#0f766e}
+  button.money{background:#854d0e;color:#fff;border-color:#854d0e}
+  button.tech{background:#1d4ed8;color:#fff;border-color:#1d4ed8}
+  button.home{background:#86198f;color:#fff;border-color:#86198f}
+  button.local{background:#374151;color:#fff;border-color:#374151}
+  .pill{display:inline-block;border:1px solid var(--bd);border-radius:999px;padding:2px 8px;margin:2px;font-size:.82rem;background:#fff;color:#444}
+  details{margin:8px 0}
+  summary{cursor:pointer;font-weight:700}
+  code{background:#f6f8fa;padding:2px 6px;border-radius:6px}
+  .status{margin-top:10px;padding:10px 12px;border-radius:10px;background:var(--soft);font-size:.95rem;color:#333;display:none}
+  .status.show{display:block}
+  .subcard{border:1px solid var(--bd);border-radius:12px;padding:12px;background:#fff}
+  .subcard.green{background:var(--green)}.subcard.blue{background:var(--blue)}.subcard.amber{background:var(--amber)}.subcard.pink{background:var(--pink)}
+  .danger-note{font-weight:700;color:#991b1b}
+</style>
+</head>
+<body>
+  <h1>Comp Scout — Giveaway Scanner (v5.1)</h1>
+  <p class="small">Craig-friendly daily search flow: ending today first, then tomorrow, then high-value prizes. Allow pop-ups for this page.</p>
+
+  <div class="card workflow">
+    <h2>Daily controls</h2>
+    <div class="row">
+      <label for="date">Main closing date:</label>
+      <input id="date" type="date">
+      <button id="today">Use today</button>
+      <button id="tomorrow">Use tomorrow</button>
+      <label for="fresh">Freshness:</label>
+      <select id="fresh">
+        <option value="d1">Today / past 24h</option>
+        <option value="d3">Past 3 days</option>
+        <option value="d7">Past week</option>
+        <option value="d14">Past 2 weeks</option>
+        <option value="d30">Past month</option>
+      </select>
+      <label for="maxTabs">Max tabs per click:</label>
+      <input id="maxTabs" type="number" min="1" max="25" value="6">
+      <label><input type="checkbox" id="sortDate" checked> Sort Google by date</label>
+      <label><input type="checkbox" id="confirmTabs" checked> Confirm before opening lots of tabs</label>
+    </div>
+    <div class="btns">
+      <button class="primary" id="daily-next">▶ Open next daily batch</button>
+      <button id="daily-reset">↺ Reset daily queue</button>
+      <button id="all-reset">Clear all saved progress</button>
+    </div>
+    <p class="small">Queue mode opens the next batch only, then remembers where you got to. With Max tabs set to 6, press the same button again for the next 6 searches.</p>
+    <div class="status" id="status"></div>
+  </div>
+
+  <div class="card">
+    <h2>Recommended daily sequence</h2>
+    <p class="small">Use these in order. They are deliberately split so you do not drown in tabs.</p>
+    <div class="grid">
+      <div class="subcard amber">
+        <strong>1. Deadline sweep</strong>
+        <div class="btns">
+          <button class="hot" id="ig-ending-today">🔥 IG Ending Today</button>
+          <button class="hot" id="ig-ending-tomorrow">⏰ IG Ending Tomorrow</button>
+          <button class="primary" id="ig-weekend">📅 IG Weekend Closers</button>
+        </div>
+      </div>
+      <div class="subcard green">
+        <strong>2. Best-value prizes</strong>
+        <div class="btns">
+          <button class="travel" id="travel-high">🏨 Hotels & Holidays</button>
+          <button class="money" id="cash-vouchers">💷 Cash & Vouchers</button>
+          <button class="tech" id="premium-tech">📱 Premium Tech</button>
+          <button class="home" id="mattress-home">🛏️ Mattress & Home</button>
+        </div>
+      </div>
+      <div class="subcard blue">
+        <strong>3. Local & nearby</strong>
+        <div class="btns">
+          <button class="local" id="local-north">📍 Northern Stays</button>
+          <button class="local" id="local-experiences">🍽️ Meals & Experiences</button>
+        </div>
+      </div>
+      <div class="subcard pink">
+        <strong>4. General sweep</strong>
+        <div class="btns">
+          <button class="primary" id="ig-fresh">IG — New</button>
+          <button class="primary" id="web-fresh">Web — New</button>
+          <button id="web-dated">Web — Ends on Date</button>
+          <button id="ig-dated">IG — Ends on Date</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="card">
+    <h2>What v5 adds</h2>
+    <p class="small"><span class="pill">Ending today</span><span class="pill">Ending tomorrow</span><span class="pill">Winner announced tomorrow</span><span class="pill">Northern hotel stays</span><span class="pill">Mattresses</span><span class="pill">Premium tech</span><span class="pill">Cash/vouchers</span><span class="pill">Tab limit</span></p>
+    <details>
+      <summary>Search strategy</summary>
+      <ul class="small">
+        <li><strong>IG Ending Today</strong> looks for today's date, words like <code>ends today</code>, <code>last chance</code>, <code>entries close tonight</code> and <code>winner announced tomorrow</code>.</li>
+        <li><strong>IG Ending Tomorrow</strong> looks for tomorrow's date, <code>ends tomorrow</code>, <code>winner announced</code> and <code>winner drawn</code>.</li>
+        <li><strong>Hotels & Holidays</strong> is broader and includes stays, city breaks, cruises, spa breaks and luxury/boutique wording.</li>
+        <li><strong>Northern Stays</strong> prioritises Manchester, Liverpool, York, Leeds, Sheffield, Chester, Harrogate, the Lake District, the Peak District and North Wales.</li>
+      </ul>
+      <p class="small danger-note">Google can still ignore parts of searches, so treat results as a scout list rather than a perfect filter.</p>
+    </details>
+  </div>
+
+<script>
+(function(){
+  function pad2(n){return (n<10?'0':'')+n}
+  function ord(n){return n%10==1&&n%100!=11?'st':n%10==2&&n%100!=12?'nd':n%10==3&&n%100!=13?'rd':'th'}
+  function monthName(i){return ['January','February','March','April','May','June','July','August','September','October','November','December'][i]}
+  function monthShort(i){return monthName(i).slice(0,3)}
+  function toIsoDate(d){return d.toLocaleDateString('en-CA')}
+  function addDays(d,n){var x=new Date(d.getFullYear(),d.getMonth(),d.getDate());x.setDate(x.getDate()+n);return x}
+  function parseDateInput(){var v=document.getElementById('date').value;if(!v)return new Date();var parts=v.split('-');return new Date(Number(parts[0]),Number(parts[1])-1,Number(parts[2]))}
+  function setStatus(msg){var el=document.getElementById('status');el.textContent=msg;el.className='status show'}
+
+  function openQuery(q){
+    var url='https://www.google.co.uk/search?q='+encodeURIComponent(q.trim());
+    if(document.getElementById('sortDate').checked) url+='&sbd=1';
+    window.open(url,'_blank');
+  }
+  function queueKey(label){
+    var date=document.getElementById('date').value||toIsoDate(new Date());
+    var fresh=document.getElementById('fresh').value;
+    return 'compScoutQueue:v51:'+label+':'+date+':'+fresh;
+  }
+  function getQueuePos(label){return Number(localStorage.getItem(queueKey(label))||0)}
+  function setQueuePos(label,pos){localStorage.setItem(queueKey(label),String(pos))}
+  function resetQueue(label){localStorage.removeItem(queueKey(label))}
+  function runQueries(list,label){
+    var max=Number(document.getElementById('maxTabs').value)||6;
+    var pos=getQueuePos(label);
+    if(pos>=list.length){
+      pos=0;
+      setQueuePos(label,0);
+    }
+    var chosen=list.slice(pos,pos+max);
+    var nextPos=pos+chosen.length;
+    var done=nextPos>=list.length;
+    if(!chosen.length){
+      setStatus(label+': queue complete. Press again to restart from the beginning.');
+      setQueuePos(label,0);
+      return;
+    }
+    var msg=label+': opening searches '+(pos+1)+'–'+nextPos+' of '+list.length+'.';
+    if(done) msg+=' Queue complete after this batch.';
+    else msg+=' Press the same button again for the next '+Math.min(max,list.length-nextPos)+'.';
+    setStatus(msg);
+    if(document.getElementById('confirmTabs').checked && chosen.length>4){
+      if(!confirm('Open '+chosen.length+' tabs for '+label+'?')) return;
+    }
+    chosen.forEach(openQuery);
+    setQueuePos(label,done?0:nextPos);
+  }
+  function clearAllProgress(){
+    Object.keys(localStorage).forEach(function(k){if(k.indexOf('compScoutQueue:v51:')===0)localStorage.removeItem(k)});
+    setStatus('All saved queue progress cleared.');
+  }
+
+  var excludeSites=[
+    '-site:jammy.co.uk','-site:aspirecomps.co.uk','-site:dreamcargiveaways.co.uk','-site:thatprizeguy.co.uk','-site:claritycomps.co.uk','-site:bountycompetitions.co.uk','-site:capitalcatchcompetitions.co.uk','-site:golfgeargiveaways.co.uk','-site:stealthcompetitions.co.uk','-site:dreams2reality.co.uk','-site:golfdailydraw.co.uk','-site:northern-competitions.co.uk','-site:prizeparadise.co.uk','-site:clickcompetitions.co.uk','-site:colliecompetitions.co.uk','-site:tradetoolgiveaways.co.uk','-site:gaminggiveaways.co.uk','-site:clovercompetitions.co.uk','-site:allstarprizes.co.uk','-site:lockdowncompetitions.co.uk','-site:apex66.co.uk','-site:hotdraw.co.uk','-site:fun-and-games.co.uk','-site:bigbeastiecompetitions.co.uk','-site:eacompetitions.co.uk','-site:toptradecompetitions.co.uk','-site:mpowercompetitions.co.uk','-site:boys.co.uk','-site:enhancedlifecompetitions.co.uk','-site:brightcompetitions.co.uk','-site:royaluxcompetitions.co.uk','-site:regalcompetitions.com','-site:starcompetition.co.uk','-site:luckywinnerscompetition.co.uk','-site:gigahertzgiveaways.co.uk','-site:blazecompetitions.co.uk','-site:carpgeargiveaways.co.uk','-site:golfstarcompetitions.co.uk','-site:footballprizes.co.uk','-site:driftcompetitions.co.uk','-site:dreamtechcompetitions.co.uk','-site:fishingdraws.co.uk','-site:acecompetitions.co.uk','-site:lavishlifecompetitions.co.uk','-site:paragoncompetitions.co.uk','-site:guitargeargiveaway.co.uk','-site:thegiveawayguys.co.uk','-site:cameracompetitions.co.uk','-site:competitions-time.co.uk','-site:theprizefinder.com','-site:simplyprizes.com','-site:pawsomecomps.com'
+  ].join(' ');
+
+  var noFootballTerms=['football','"football club"','fixture','fixtures','stadium','matchday','"Premier League"','EPL','Championship','"League One"','"League Two"','"FA Cup"','"Carabao Cup"','UEFA','"Champions League"','"Europa League"','MUFC','MCFC','"Manchester United"','"Manchester City"','Old Trafford','Etihad','kick-off','FC'];
+  var noFootballNeg=noFootballTerms.map(function(t){return '-'+t}).join(' ');
+  var give='("giveaway" OR "competition" OR "prize draw" OR "win")';
+  var uk='("UK only" OR "UK residents" OR "UK giveaway" OR "UK competition" OR site:.co.uk)';
+  var IG='site:instagram.com';
+  var WEB='';
+
+  function freshAfter(){
+    var mode=document.getElementById('fresh').value,days=1;
+    if(mode==='d3')days=3;else if(mode==='d7')days=7;else if(mode==='d14')days=14;else if(mode==='d30')days=30;
+    return ' after:'+toIsoDate(addDays(new Date(),-(days-1)));
+  }
+  function dateParts(date){
+    var d=date.getDate(),m=date.getMonth()+1,y=date.getFullYear();
+    var yy=String(y).slice(-2);
+    return {
+      d:d,m:m,y:y,
+      dateSlash:pad2(d)+'/'+pad2(m),
+      dateSlashYear:pad2(d)+'/'+pad2(m)+'/'+y,
+      dateSlashShort:pad2(d)+'/'+pad2(m)+'/'+yy,
+      dateDash:pad2(d)+'-'+pad2(m),
+      dateLong:d+' '+monthName(m-1),
+      dateLongYear:d+' '+monthName(m-1)+' '+y,
+      dateOrdinal:d+ord(d)+' '+monthName(m-1),
+      dateShort:d+' '+monthShort(m-1),
+      weekday:['Sunday','Monday','Tuesday','Wednesday','Thursday','Friday','Saturday'][date.getDay()],
+      monthName:monthName(m-1)
+    };
+  }
+  function dateTerm(dp){
+    return '("'+dp.dateSlash+'" OR "'+dp.dateSlashYear+'" OR "'+dp.dateSlashShort+'" OR "'+dp.dateDash+'" OR "'+dp.dateShort+'" OR "'+dp.dateLong+'" OR "'+dp.dateLongYear+'" OR "'+dp.dateOrdinal+'")';
+  }
+
+  function igEnding(date,mode){
+    var dp=dateParts(date), tomorrow=dateParts(addDays(new Date(),1));
+    var dates=dateTerm(dp);
+    var base=IG+' '+give+' ';
+    var q=[];
+    q.push(base+'("ends" OR "closes" OR "closing" OR "enter by" OR "entries close") '+dates);
+    if(mode==='today'){
+      q.push(base+'("ends today" OR "closes today" OR "closing today" OR "last chance" OR "final chance" OR "last day to enter" OR "entries close tonight")');
+      q.push(base+'("winner announced tomorrow" OR "winner drawn tomorrow" OR "winner chosen tomorrow")');
+      q.push(base+'("ends tonight" OR "closes tonight" OR "drawn tonight")');
+    } else {
+      q.push(base+'("ends tomorrow" OR "closes tomorrow" OR "closing tomorrow" OR "last chance tomorrow")');
+      q.push(base+'("winner announced" OR "winner drawn" OR "winner chosen") '+dateTerm(tomorrow));
+    }
+    q.push(base+'(hotel OR "hotel stay" OR staycation OR spa OR suite OR holiday OR "city break") '+dates);
+    q.push(base+'(iPhone OR Samsung OR Galaxy OR Pixel OR MacBook OR laptop OR TV OR "OLED TV" OR iPad) '+dates);
+    q.push(base+'(cash OR voucher OR "gift card" OR "prepaid card") '+dates);
+    return q;
+  }
+
+  function categoryQueries(cat){
+    var after=freshAfter();
+    var northern='(Manchester OR Liverpool OR York OR Leeds OR Sheffield OR Chester OR Harrogate OR "Lake District" OR "Peak District" OR "North Wales" OR Birmingham)';
+    var stays='(hotel OR "hotel stay" OR "overnight stay" OR staycation OR suite OR spa OR "bed and breakfast" OR DBB OR "city break" OR holiday OR holidays OR cruise OR "mini-cruise")';
+    var tech='(iPhone OR Samsung OR Galaxy OR Pixel OR smartphone OR phone OR iPad OR tablet OR MacBook OR laptop OR "OLED TV" OR "Samsung TV" OR "Sony TV" OR "LG TV")';
+    var cash='(cash OR "£" OR voucher OR "gift card" OR "gift voucher" OR "prepaid card" OR "shopping voucher")';
+    var home='(mattress OR bed OR "bed frame" OR sofa OR furniture OR "home makeover" OR appliance OR Dyson OR Shark)';
+    var meals='("dinner for two" OR "meal for two" OR "brunch for two" OR "bottomless brunch" OR "afternoon tea" OR restaurant OR "tasting menu" OR tickets OR "pair of tickets" OR theatre OR gig OR cinema)';
+    var q=[];
+    if(cat==='travel'){
+      q.push(WEB+' '+give+' '+stays+' '+uk+' '+excludeSites+after);
+      q.push(IG+' '+give+' '+stays+' '+uk+after);
+      q.push(IG+' '+give+' '+stays+' (luxury OR boutique OR spa OR suite)'+after);
+      q.push(WEB+' ("win" AROUND(3) ("hotel stay" OR staycation OR cruise OR "city break")) '+uk+' '+excludeSites+after);
+      q.push(IG+' '+give+' '+stays+' '+northern+after);
+    }
+    if(cat==='north'){
+      q.push(IG+' '+give+' '+stays+' '+northern+after);
+      q.push(WEB+' '+give+' '+stays+' '+northern+' '+excludeSites+after);
+      q.push(IG+' ("Liverpool hotel" OR "York hotel" OR "Leeds hotel" OR "Sheffield hotel" OR "Chester hotel" OR "Manchester hotel") '+give+after);
+      q.push(WEB+' ("win" AROUND(4) ("hotel stay" OR staycation OR "overnight stay")) '+northern+' '+excludeSites+after);
+    }
+    if(cat==='cash'){
+      q.push(WEB+' '+give+' '+cash+' '+uk+' '+excludeSites+after);
+      q.push(IG+' '+give+' '+cash+' '+uk+after);
+      q.push(WEB+' (("win" OR "giveaway") AROUND(3) (cash OR voucher OR "gift card")) '+uk+' '+excludeSites+after);
+    }
+    if(cat==='tech'){
+      q.push(WEB+' '+give+' '+tech+' '+uk+' '+excludeSites+after);
+      q.push(IG+' '+give+' '+tech+' '+uk+after);
+      q.push(WEB+' (("win" OR "giveaway") AROUND(3) (iPhone OR Samsung OR laptop OR MacBook OR "OLED TV")) '+uk+' '+excludeSites+after);
+    }
+    if(cat==='home'){
+      q.push(WEB+' '+give+' '+home+' '+uk+' '+excludeSites+after);
+      q.push(IG+' '+give+' '+home+' '+uk+after);
+      q.push(WEB+' (("win" OR "giveaway") AROUND(3) (mattress OR bed OR sofa OR Dyson OR Shark)) '+uk+' '+excludeSites+after);
+    }
+    if(cat==='local'){
+      q.push(IG+' '+give+' '+meals+' '+northern+' '+noFootballNeg+after);
+      q.push(WEB+' '+give+' '+meals+' '+northern+' '+noFootballNeg+' '+excludeSites+after);
+      q.push(WEB+' ("win" AROUND(3) (tickets OR "pair of tickets" OR "dinner for two" OR "afternoon tea")) '+northern+' '+noFootballNeg+' '+excludeSites+after);
+    }
+    return q;
+  }
+
+  function datedQueries(scope,date){
+    var dp=dateParts(date),dates=dateTerm(dp),ends='("ends" OR "closing" OR "enter by" OR "closes" OR "entries close")';
+    var stays='(hotel OR "overnight stay" OR staycation OR suite OR spa OR "bed and breakfast" OR DBB OR "city break" OR holiday OR holidays OR cruise)';
+    var q=[];
+    if(scope==='ig'){
+      q.push(IG+' '+give+' '+ends+' '+dates+' '+uk);
+      q.push(IG+' '+give+' '+stays+' '+ends+' '+dates+' '+uk);
+      q.push(IG+' '+give+' (cash OR voucher OR "gift card" OR iPhone OR laptop OR TV OR mattress) '+ends+' '+dates);
+    } else {
+      q.push(WEB+' '+give+' '+ends+' '+dates+' '+uk+' '+excludeSites);
+      q.push(WEB+' '+give+' '+stays+' '+ends+' '+dates+' '+uk+' '+excludeSites);
+      q.push(WEB+' ("Closing date:" OR "Closes:" OR "Closing date") * '+dp.monthName+' '+dp.y+' '+give+' '+uk+' '+excludeSites);
+      q.push(WEB+' ("Ends" OR "Enter by" OR "Entries close") * '+dp.monthName+' '+dp.y+' '+give+' '+uk+' '+excludeSites);
+    }
+    return q;
+  }
+
+  function igFresh(){return [IG+' '+give+' '+uk+freshAfter(),IG+' '+give+' (hotel OR staycation OR holiday OR cash OR voucher OR iPhone OR laptop OR TV OR mattress) '+uk+freshAfter()]}
+  function webFresh(){return [WEB+' '+give+' '+uk+' '+excludeSites+freshAfter()].concat(categoryQueries('travel'),categoryQueries('cash'),categoryQueries('tech'))}
+  function igWeekend(){return [
+    IG+' '+give+' ("ends Sunday" OR "closes Sunday" OR "this Sunday" OR "this weekend" OR "weekend giveaway")',
+    IG+' '+give+' ("winner announced Monday" OR "winner drawn Monday" OR "winner chosen Monday")',
+    IG+' '+give+' (hotel OR staycation OR spa OR suite OR restaurant OR tickets) ("Sunday" OR "this weekend")'
+  ]}
+
+  function dailyQueue(){
+    // Ranked by Craig-value: deadlines first, then holidays/hotels, cash, tech, northern stays, mattress/home, local experiences, then broader fresh scans.
+    return []
+      .concat(igEnding(new Date(),'today'))
+      .concat(igEnding(addDays(new Date(),1),'tomorrow'))
+      .concat(categoryQueries('travel'))
+      .concat(categoryQueries('cash'))
+      .concat(categoryQueries('tech'))
+      .concat(categoryQueries('north'))
+      .concat(igWeekend())
+      .concat(igFresh())
+      .concat(categoryQueries('home'))
+      .concat(categoryQueries('local'))
+      .concat(webFresh());
+  }
+
+  var input=document.getElementById('date');
+  input.value=toIsoDate(new Date());
+  document.getElementById('today').onclick=function(){input.value=toIsoDate(new Date())};
+  document.getElementById('tomorrow').onclick=function(){input.value=toIsoDate(addDays(new Date(),1))};
+  document.getElementById('daily-next').onclick=function(){runQueries(dailyQueue(),'Daily Master Queue')};
+  document.getElementById('daily-reset').onclick=function(){resetQueue('Daily Master Queue');setStatus('Daily Master Queue reset. Next click starts from search 1.')};
+  document.getElementById('all-reset').onclick=clearAllProgress;
+
+  document.getElementById('ig-ending-today').onclick=function(){runQueries(igEnding(new Date(),'today'),'IG Ending Today')};
+  document.getElementById('ig-ending-tomorrow').onclick=function(){runQueries(igEnding(addDays(new Date(),1),'tomorrow'),'IG Ending Tomorrow')};
+  document.getElementById('ig-weekend').onclick=function(){runQueries(igWeekend(),'IG Weekend Closers')};
+  document.getElementById('travel-high').onclick=function(){runQueries(categoryQueries('travel'),'Hotels & Holidays')};
+  document.getElementById('cash-vouchers').onclick=function(){runQueries(categoryQueries('cash'),'Cash & Vouchers')};
+  document.getElementById('premium-tech').onclick=function(){runQueries(categoryQueries('tech'),'Premium Tech')};
+  document.getElementById('mattress-home').onclick=function(){runQueries(categoryQueries('home'),'Mattress & Home')};
+  document.getElementById('local-north').onclick=function(){runQueries(categoryQueries('north'),'Northern Stays')};
+  document.getElementById('local-experiences').onclick=function(){runQueries(categoryQueries('local'),'Meals & Experiences')};
+  document.getElementById('ig-fresh').onclick=function(){runQueries(igFresh(),'IG New')};
+  document.getElementById('web-fresh').onclick=function(){runQueries(webFresh(),'Web New')};
+  document.getElementById('web-dated').onclick=function(){runQueries(datedQueries('web',parseDateInput()),'Web Ends on Date')};
+  document.getElementById('ig-dated').onclick=function(){runQueries(datedQueries('ig',parseDateInput()),'IG Ends on Date')};
+})();
+</script>
+</body>
+</html>

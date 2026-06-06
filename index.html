@@ -2,35 +2,35 @@
 <html lang="en">
 <head>
 <meta charset="utf-8">
-<title>Comp Scout — Giveaway Scanner (v5.5)</title>
+<title>Comp Scout — Daily Giveaway Scanner (v6.1)</title>
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <style>
   :root{
     --fg:#111;--muted:#666;--bd:#e5e7eb;--soft:#f8fafc;--accent:#111;
-    --green:#ecfdf5;--blue:#eff6ff;--amber:#fffbeb;--pink:#fdf2f8;
+    --hot:#dc2626;--travel:#0f766e;--money:#854d0e;--tech:#1d4ed8;--home:#86198f;--local:#374151;
+    --green:#ecfdf5;--blue:#eff6ff;--amber:#fffbeb;--pink:#fdf2f8;--lav:#faf5ff;
   }
   *{box-sizing:border-box}
-  body{font-family:system-ui,-apple-system,Segoe UI,Roboto,Inter,Arial,sans-serif;max-width:1100px;margin:28px auto;padding:0 16px;line-height:1.55;color:var(--fg);background:#fff}
+  body{font-family:system-ui,-apple-system,Segoe UI,Roboto,Inter,Arial,sans-serif;max-width:1040px;margin:28px auto;padding:0 16px;line-height:1.55;color:var(--fg);background:#fff}
   h1{font-size:1.7rem;margin:0 0 6px}
-  h2{font-size:1.15rem;margin:0 0 8px}
+  h2{font-size:1.12rem;margin:0 0 8px}
   p.small,.small{font-size:.92rem;color:var(--muted);margin:.25rem 0 .8rem}
   .card{border:1px solid var(--bd);border-radius:14px;padding:16px;margin:12px 0;box-shadow:0 1px 3px rgba(0,0,0,.04);background:#fff}
   .workflow{background:linear-gradient(180deg,#fff,var(--soft))}
   .row{display:flex;gap:12px;align-items:center;flex-wrap:wrap}
-  .grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(230px,1fr));gap:12px}
+  .grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:12px}
   label{display:block;margin:6px 0}
-  input[type="date"],select,input[type="number"]{padding:7px 10px;font-size:1rem;border:1px solid var(--bd);border-radius:9px;background:#fff}
-  input[type="number"]{width:86px}
+  input[type="date"]{padding:7px 10px;font-size:1rem;border:1px solid var(--bd);border-radius:9px;background:#fff}
   .btns{display:flex;gap:10px;flex-wrap:wrap;margin-top:10px}
   button{padding:10px 14px;border:1px solid var(--bd);background:#fff;border-radius:11px;font-weight:700;cursor:pointer;transition:.12s transform,.12s box-shadow}
   button:hover{transform:translateY(-1px);box-shadow:0 2px 8px rgba(0,0,0,.08)}
   button.primary{background:#111;color:#fff;border-color:#111}
-  button.hot{background:#dc2626;color:#fff;border-color:#dc2626}
-  button.travel{background:#0f766e;color:#fff;border-color:#0f766e}
-  button.money{background:#854d0e;color:#fff;border-color:#854d0e}
-  button.tech{background:#1d4ed8;color:#fff;border-color:#1d4ed8}
-  button.home{background:#86198f;color:#fff;border-color:#86198f}
-  button.local{background:#374151;color:#fff;border-color:#374151}
+  button.hot{background:var(--hot);color:#fff;border-color:var(--hot)}
+  button.travel{background:var(--travel);color:#fff;border-color:var(--travel)}
+  button.money{background:var(--money);color:#fff;border-color:var(--money)}
+  button.tech{background:var(--tech);color:#fff;border-color:var(--tech)}
+  button.home{background:var(--home);color:#fff;border-color:var(--home)}
+  button.local{background:var(--local);color:#fff;border-color:var(--local)}
   .pill{display:inline-block;border:1px solid var(--bd);border-radius:999px;padding:2px 8px;margin:2px;font-size:.82rem;background:#fff;color:#444}
   details{margin:8px 0}
   summary{cursor:pointer;font-weight:700}
@@ -38,108 +38,82 @@
   .status{margin-top:10px;padding:10px 12px;border-radius:10px;background:var(--soft);font-size:.95rem;color:#333;display:none}
   .status.show{display:block}
   .subcard{border:1px solid var(--bd);border-radius:12px;padding:12px;background:#fff}
-  .subcard.green{background:var(--green)}.subcard.blue{background:var(--blue)}.subcard.amber{background:var(--amber)}.subcard.pink{background:var(--pink)}
-  .danger-note{font-weight:700;color:#991b1b}
-  .batch-list,.queue-list{margin:.4rem 0 0;padding-left:1.2rem}.batch-list li,.queue-list li{margin:.35rem 0}.batch-list a,.queue-list a{word-break:break-word}.queue-current{background:#fff7ed;border:1px solid #fed7aa;border-radius:10px;padding:8px}.queue-done{opacity:.48;text-decoration:line-through}.queue-meta{font-weight:700;margin:.35rem 0}.queue-actions{display:flex;gap:8px;flex-wrap:wrap;margin:.5rem 0}
+  .subcard.green{background:var(--green)}.subcard.blue{background:var(--blue)}.subcard.amber{background:var(--amber)}.subcard.pink{background:var(--pink)}.subcard.lav{background:var(--lav)}
+  .queue-list{margin:.4rem 0 0;padding-left:1.2rem}.queue-list li{margin:.35rem 0}.queue-list a{word-break:break-word}.queue-current{background:#fff7ed;border:1px solid #fed7aa;border-radius:10px;padding:8px}.queue-done{opacity:.48;text-decoration:line-through}.queue-meta{font-weight:800;margin:.35rem 0}.hint{background:#f9fafb;border-left:4px solid #111;padding:10px 12px;border-radius:8px}
 </style>
 </head>
 <body>
-  <h1>Comp Scout — Giveaway Scanner (v5.5)</h1>
-  <p class="small">Craig-friendly daily search flow: deadlines first, then hotels/stays, holidays/cruises, cash, tech, mattress/home and local prizes. Batch links always appear below in case your browser blocks tabs.</p>
+  <h1>Comp Scout — Daily Giveaway Scanner (v6.1)</h1>
+  <p class="small">A simpler Craig-friendly queue: 8 strong searches, richer low-entry terms, UK-biased, one Google tab at a time.</p>
 
   <div class="card workflow">
-    <h2>Daily controls</h2>
+    <h2>Today’s Queue</h2>
     <div class="row">
-      <label for="date">Main closing date:</label>
+      <label for="date">Manual closing date:</label>
       <input id="date" type="date">
       <button id="today">Use today</button>
       <button id="tomorrow">Use tomorrow</button>
-      <label for="fresh">Freshness for new searches:</label>
-      <select id="fresh">
-        <option value="d1">Today / past 24h</option>
-        <option value="d3">Past 3 days</option>
-        <option value="d7">Past week</option>
-        <option value="d14">Past 2 weeks</option>
-        <option value="d30">Past month</option>
-      </select>
-      <label for="deadlineFresh">Deadline search age:</label>
-      <select id="deadlineFresh">
-        <option value="d30">Past month</option>
-        <option value="d60" selected>Past 2 months</option>
-        <option value="d90">Past 3 months</option>
-        <option value="ytd">This year</option>
-      </select>
-      <span style="display:none"><label for="maxTabs">Max tabs per click:</label>
-      <input id="maxTabs" type="number" min="1" max="25" value="1" style="display:none"></span>
       <label><input type="checkbox" id="sortDate" checked> Sort Google by date</label>
     </div>
-    <p class="small"><strong>Freshness for new searches</strong> controls newly-posted comp searches. <strong>Deadline search age</strong> controls ending-today/tomorrow/date searches so old 2023/2024 posts are filtered out.</p>
     <div class="btns">
-      <button class="primary" id="daily-next">▶ Load daily queue</button>
+      <button class="primary" id="daily-load">▶ Load Today’s Queue</button>
       <button class="hot" id="open-current">Open current search</button>
       <button id="skip-current">Skip current</button>
-      <button id="daily-reset">↺ Reset daily queue</button>
-      <button id="all-reset">Clear all saved progress</button>
+      <button id="daily-reset">↺ Reset queue</button>
+      <button id="all-reset">Clear saved progress</button>
     </div>
-    <p class="small">Queue mode now opens <strong>one tab at a time</strong>. Load a queue, then work through the visible list using Open current search or Skip current.</p>
+    <p class="small">The daily queue is deliberately short: 8 searches. Open one, check results, come back, open the next.</p>
     <div class="status" id="status"></div>
-    <div class="status" id="batchLinks"></div>
+    <div class="status" id="queueBox"></div>
   </div>
 
   <div class="card">
-    <h2>Recommended daily sequence</h2>
-    <p class="small">Use these in order. They are deliberately split so you do not drown in tabs.</p>
+    <h2>Quick Access</h2>
+    <p class="small">In a rush? Load one focused queue instead of the full daily route.</p>
     <div class="grid">
       <div class="subcard amber">
-        <strong>1. Deadline sweep</strong>
+        <strong>Deadlines</strong>
         <div class="btns">
-          <button class="hot" id="ig-ending-today">🔥 IG Ending Today</button>
-          <button class="hot" id="ig-ending-tomorrow">⏰ IG Ending Tomorrow</button>
-          <button class="primary" id="ig-weekend">📅 IG Weekend Closers</button>
+          <button class="hot" id="ending-today">🔥 Ending Today</button>
+          <button class="hot" id="ending-tomorrow">⏰ Ending Tomorrow</button>
         </div>
       </div>
       <div class="subcard green">
-        <strong>2. Best-value prizes</strong>
+        <strong>High-value</strong>
         <div class="btns">
-          <button class="travel" id="travel-stays">🏨 Hotels & Stays</button>
-          <button class="travel" id="holidays-cruises">✈️ Holidays & Cruises</button>
+          <button class="travel" id="travel-breaks">🏨 Travel & Holidays</button>
           <button class="money" id="cash-vouchers">💷 Cash & Vouchers</button>
-          <button class="tech" id="premium-tech">📱 Premium Tech</button>
-          <button class="home" id="mattress-home">🛏️ Mattress & Home</button>
+          <button class="tech" id="tech-home">📱 Tech & Home</button>
         </div>
       </div>
       <div class="subcard blue">
-        <strong>3. Local & nearby</strong>
+        <strong>Nearby</strong>
         <div class="btns">
-          <button class="local" id="local-north">📍 Northern Stays</button>
-          <button class="local" id="local-experiences">🍽️ Meals & Experiences</button>
+          <button class="local" id="local-experiences">🍽️ Local Experiences</button>
+          <button class="local" id="rail-attractions">🚆 Rail & Attractions</button>
         </div>
       </div>
-      <div class="subcard pink">
-        <strong>4. General sweep</strong>
+      <div class="subcard lav">
+        <strong>Low-entry discovery</strong>
         <div class="btns">
-          <button class="primary" id="ig-fresh">IG — New</button>
-          <button class="primary" id="web-fresh">Web — New</button>
-          <button id="web-dated">Web — Ends on Date</button>
-          <button id="ig-dated">IG — Ends on Date</button>
+          <button class="primary" id="hidden-gems">🎯 Hidden Gems</button>
+          <button class="primary" id="new-finds">🆕 New Finds</button>
         </div>
       </div>
     </div>
   </div>
 
   <div class="card">
-    <h2>What v5.4 adds</h2>
-    <p class="small"><span class="pill">Ending today</span><span class="pill">Ending tomorrow</span><span class="pill">Winner announced tomorrow</span><span class="pill">London/Edinburgh hotel stays</span><span class="pill">Northern hotel stays</span><span class="pill">Holidays/cruises</span><span class="pill">Mattresses</span><span class="pill">Premium tech</span><span class="pill">Cash/vouchers</span><span class="pill">One-tab visible queue</span></p>
+    <h2>What v6 searches for</h2>
+    <p class="small"><span class="pill">Ending today</span><span class="pill">Ending tomorrow</span><span class="pill">New Instagram</span><span class="pill">City stays</span><span class="pill">Holidays & cruises</span><span class="pill">Cash</span><span class="pill">Vouchers</span><span class="pill">TVs</span><span class="pill">Laptops</span><span class="pill">Mattresses</span><span class="pill">Cordless vacuums</span><span class="pill">Rail travel</span><span class="pill">Attractions</span><span class="pill">Hidden low-entry comps</span></p>
     <details>
       <summary>Search strategy</summary>
+      <p class="small">v6.1 removes the big intimidating 40+ search queue. It uses 8 strong searches in the daily route, with quick buttons for days when you only want hotels, tech, local prizes or hidden gems.</p>
       <ul class="small">
-        <li><strong>IG Ending Today</strong> looks for today's date, words like <code>ends today</code>, <code>last chance</code>, <code>entries close tonight</code> and <code>winner announced tomorrow</code>.</li>
-        <li><strong>IG Ending Tomorrow</strong> looks for tomorrow's date, <code>ends tomorrow</code>, <code>winner announced</code> and <code>winner drawn</code>.</li>
-        <li><strong>Hotels & Stays</strong> includes London, Edinburgh, Liverpool, York, Leeds, Sheffield, Manchester, Chester, Bath, Oxford, Cambridge, the Lake District, the Peak District and North Wales.</li>
-        <li><strong>Holidays & Cruises</strong> covers UK-resident travel prizes, cruises, Jet2/TUI-style holidays, flights and city breaks.</li>
-        <li><strong>Northern Stays</strong> prioritises Manchester, Liverpool, York, Leeds, Sheffield, Chester, Harrogate, the Lake District, the Peak District and North Wales.</li>
+        <li><strong>UK bias:</strong> UK city names, UK region parameter, obvious Australia terms excluded and original raffle/paid comping sites excluded from web searches.</li>
+        <li><strong>Travel:</strong> hotel, suite, spa, penthouse, retreat, glamping, cabins, boutique hotels, city breaks, cruises, rail-friendly UK cities, Blackpool, London, Edinburgh, Liverpool, York, Leeds, Sheffield, Chester and more.</li>
+        <li><strong>Hidden Gems:</strong> anniversary, launch, opening, reopening, milestone, customer appreciation, new menu, rebrand and “to celebrate” giveaways from smaller local businesses.</li>
       </ul>
-      <p class="small danger-note">Deadline searches use Google date filters by default, so ending-today/tomorrow results should mostly come from recent pages instead of old competitions. Queue mode opens one search at a time and visibly tracks your progress.</p>
     </details>
   </div>
 
@@ -151,312 +125,132 @@
   function monthShort(i){return monthName(i).slice(0,3)}
   function toIsoDate(d){return d.toLocaleDateString('en-CA')}
   function addDays(d,n){var x=new Date(d.getFullYear(),d.getMonth(),d.getDate());x.setDate(x.getDate()+n);return x}
-  function parseDateInput(){var v=document.getElementById('date').value;if(!v)return new Date();var parts=v.split('-');return new Date(Number(parts[0]),Number(parts[1])-1,Number(parts[2]))}
+  function parseDateInput(){var v=document.getElementById('date').value;if(!v)return new Date();var p=v.split('-');return new Date(Number(p[0]),Number(p[1])-1,Number(p[2]))}
   function setStatus(msg){var el=document.getElementById('status');el.textContent=msg;el.className='status show'}
+  function esc(str){return String(str).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;')}
 
-  function splitQuery(raw){
-    var q=String(raw||'');
-    var tbs='';
-    q=q.replace(/\s*__TBS:([^\s]+)\s*$/,'');
-    var m=String(raw||'').match(/__TBS:([^\s]+)\s*$/);
-    if(m)tbs=m[1];
-    return {q:q.trim(),tbs:tbs};
-  }
-  function queryUrl(raw){
-    var parts=splitQuery(raw);
-    var url='https://www.google.co.uk/search?q='+encodeURIComponent(parts.q);
-    if(parts.tbs) url+='&tbs='+encodeURIComponent(parts.tbs);
-    if(document.getElementById('sortDate').checked) url+='&sbd=1';
-    return url;
-  }
-  function shortLabel(raw){
-    var parts=splitQuery(raw);
-    var label=parts.q.replace(/\s+/g,' ').trim();
-    if(parts.tbs) label+='  ['+readableTbs(parts.tbs)+']';
-    return label.slice(0,190);
-  }
-  function readableTbs(tbs){
-    var map={'qdr:d':'past 24h','qdr:d3':'past 3 days','qdr:w':'past week','qdr:w2':'past 2 weeks','qdr:m':'past month','qdr:m2':'past 2 months','qdr:m3':'past 3 months','qdr:y':'past year'};
-    if(map[tbs])return map[tbs];
-    if(tbs.indexOf('cdr:1')===0)return 'custom date range';
-    return tbs;
-  }
-  function queueKey(label){
-    var date=document.getElementById('date').value||toIsoDate(new Date());
-    var fresh=document.getElementById('fresh').value;
-    var deadline=document.getElementById('deadlineFresh').value;
-    return 'compScoutQueue:v55:'+label+':'+date+':'+fresh+':'+deadline;
-  }
-  function getQueuePos(label){return Number(localStorage.getItem(queueKey(label))||0)}
-  function setQueuePos(label,pos){localStorage.setItem(queueKey(label),String(pos))}
-  function resetQueue(label){localStorage.removeItem(queueKey(label));localStorage.removeItem('compScoutActive:v55')}
-  function saveActive(label,list,pos){
-    localStorage.setItem('compScoutActive:v55',JSON.stringify({label:label,list:list,pos:pos||0,savedAt:Date.now()}));
-    setQueuePos(label,pos||0);
-  }
-  function getActive(){
-    try{return JSON.parse(localStorage.getItem('compScoutActive:v55')||'null')}catch(e){return null}
-  }
-  function escapeHtml(str){return String(str).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;')}
-  function renderQueue(){
-    var active=getActive();
-    var el=document.getElementById('batchLinks');
-    if(!active||!active.list||!active.list.length){
-      el.innerHTML='<p class="small">No queue loaded yet. Choose Daily Queue or one of the category buttons.</p>';
-      el.className='status show';
-      return;
-    }
-    var list=active.list, pos=Number(active.pos||0);
-    if(pos>=list.length){
-      el.innerHTML='<strong>'+escapeHtml(active.label)+': complete</strong><p class="small">Reload this queue to start again, or choose another category.</p>';
-      el.className='status show';
-      return;
-    }
-    var current=list[pos];
-    var html='<div class="queue-meta">'+escapeHtml(active.label)+' — Search '+(pos+1)+' of '+list.length+'</div>';
-    html+='<div class="queue-current"><strong>Current:</strong><br><a href="'+escapeHtml(queryUrl(current))+'" target="_blank" rel="noopener">'+escapeHtml(shortLabel(current))+'</a></div>';
-    html+='<p class="small">Use <strong>Open current search</strong> to open one Google tab and move to the next item. The full queue is below so you can see exactly what is coming up.</p>';
-    html+='<ol class="queue-list">';
-    list.forEach(function(q,i){
-      var cls=i<pos?' class="queue-done"':(i===pos?' class="queue-current"':'');
-      html+='<li'+cls+'><a href="'+escapeHtml(queryUrl(q))+'" target="_blank" rel="noopener">'+escapeHtml(shortLabel(q))+'</a></li>';
-    });
-    html+='</ol>';
-    el.innerHTML=html;
-    el.className='status show';
-  }
-  function runQueries(list,label){
-    var seen={};
-    list=list.filter(function(q){
-      if(!q)return false;
-      var key=String(q).replace(/\s+/g,' ').trim();
-      if(seen[key])return false;
-      seen[key]=true;
-      return true;
-    });
-    var pos=getQueuePos(label);
-    if(pos>=list.length)pos=0;
-    saveActive(label,list,pos);
-    setStatus(label+': queue loaded. Open one search at a time.');
-    renderQueue();
-  }
-  function openCurrent(){
-    var active=getActive();
-    if(!active||!active.list||!active.list.length){setStatus('Load a queue first.');renderQueue();return;}
-    var pos=Number(active.pos||0), list=active.list;
-    if(pos>=list.length){setStatus(active.label+': complete. Load a queue to start again.');renderQueue();return;}
-    var q=list[pos];
-    var w=window.open(queryUrl(q),'_blank');
-    active.pos=pos+1;
-    saveActive(active.label,list,active.pos);
-    setStatus(active.label+': opened search '+(pos+1)+' of '+list.length+'.');
-    renderQueue();
-    if(!w){setStatus(active.label+': your browser may have blocked the tab. Use the current link in the visible queue.');}
-  }
-  function skipCurrent(){
-    var active=getActive();
-    if(!active||!active.list||!active.list.length){setStatus('Load a queue first.');renderQueue();return;}
-    var pos=Number(active.pos||0);
-    if(pos<active.list.length){active.pos=pos+1;saveActive(active.label,active.list,active.pos);setStatus(active.label+': skipped search '+(pos+1)+'.');}
-    renderQueue();
-  }
-  function clearAllProgress(){
-    Object.keys(localStorage).forEach(function(k){if(k.indexOf('compScoutQueue:v55:')===0||k==='compScoutActive:v55')localStorage.removeItem(k)});
-    setStatus('All saved queue progress cleared.');
-    renderQueue();
-  }
+  var VERSION='v61';
+  var IG='site:instagram.com';
+  var WEB='';
+  var give='("giveaway" OR "competition" OR "prize draw" OR "win")';
+  var ukSoft='(UK OR Britain OR British OR England OR Scotland OR Wales OR London OR Manchester OR Liverpool OR Leeds OR York OR Sheffield OR Chester OR Blackpool OR Birmingham OR Edinburgh)';
+  var ukPlaces='(Manchester OR Liverpool OR Leeds OR York OR Sheffield OR Chester OR Blackpool OR Birmingham OR London OR Edinburgh OR Bath OR Oxford OR Cambridge OR Harrogate OR "Lake District" OR "Peak District" OR "North Wales")';
+  var northPlaces='(Manchester OR Liverpool OR Leeds OR York OR Sheffield OR Chester OR Blackpool OR Birmingham OR Harrogate OR "Lake District" OR "Peak District" OR "North Wales")';
+  var auNeg='-Australia -Australian -Sydney -Melbourne -Brisbane -Perth -Adelaide -Queensland -Victoria -NSW -"New South Wales" -site:.com.au -site:.au';
+  var noFootball='-football -"football club" -fixture -fixtures -stadium -matchday -"Premier League" -EPL -Championship -"FA Cup" -UEFA -"Manchester United" -"Manchester City" -Old Trafford -Etihad -kick-off -FC';
 
+  // Original v4 paid raffle/comping-site blocklist kept for web searches.
   var excludeSites=[
     '-site:jammy.co.uk','-site:aspirecomps.co.uk','-site:dreamcargiveaways.co.uk','-site:thatprizeguy.co.uk','-site:claritycomps.co.uk','-site:bountycompetitions.co.uk','-site:capitalcatchcompetitions.co.uk','-site:golfgeargiveaways.co.uk','-site:stealthcompetitions.co.uk','-site:dreams2reality.co.uk','-site:golfdailydraw.co.uk','-site:northern-competitions.co.uk','-site:prizeparadise.co.uk','-site:clickcompetitions.co.uk','-site:colliecompetitions.co.uk','-site:tradetoolgiveaways.co.uk','-site:gaminggiveaways.co.uk','-site:clovercompetitions.co.uk','-site:allstarprizes.co.uk','-site:lockdowncompetitions.co.uk','-site:apex66.co.uk','-site:hotdraw.co.uk','-site:fun-and-games.co.uk','-site:bigbeastiecompetitions.co.uk','-site:eacompetitions.co.uk','-site:toptradecompetitions.co.uk','-site:mpowercompetitions.co.uk','-site:boys.co.uk','-site:enhancedlifecompetitions.co.uk','-site:brightcompetitions.co.uk','-site:royaluxcompetitions.co.uk','-site:regalcompetitions.com','-site:starcompetition.co.uk','-site:luckywinnerscompetition.co.uk','-site:gigahertzgiveaways.co.uk','-site:blazecompetitions.co.uk','-site:carpgeargiveaways.co.uk','-site:golfstarcompetitions.co.uk','-site:footballprizes.co.uk','-site:driftcompetitions.co.uk','-site:dreamtechcompetitions.co.uk','-site:fishingdraws.co.uk','-site:acecompetitions.co.uk','-site:lavishlifecompetitions.co.uk','-site:paragoncompetitions.co.uk','-site:guitargeargiveaway.co.uk','-site:thegiveawayguys.co.uk','-site:cameracompetitions.co.uk','-site:competitions-time.co.uk','-site:theprizefinder.com','-site:simplyprizes.com','-site:pawsomecomps.com'
   ].join(' ');
 
-  var noFootballTerms=['football','"football club"','fixture','fixtures','stadium','matchday','"Premier League"','EPL','Championship','"League One"','"League Two"','"FA Cup"','"Carabao Cup"','UEFA','"Champions League"','"Europa League"','MUFC','MCFC','"Manchester United"','"Manchester City"','Old Trafford','Etihad','kick-off','FC'];
-  var noFootballNeg=noFootballTerms.map(function(t){return '-'+t}).join(' ');
-  var give='("giveaway" OR "competition" OR "prize draw" OR "win")';
-  var uk='("UK only" OR "UK residents" OR "UK giveaway" OR "UK competition" OR site:.co.uk)';
-  var IG='site:instagram.com';
-  var WEB='';
+  var travelTerms='(hotel OR "hotel stay" OR "overnight stay" OR staycation OR suite OR "spa break" OR "spa stay" OR "bed and breakfast" OR DBB OR "city break" OR "weekend break" OR "luxury break" OR "luxury stay" OR "boutique hotel" OR "country house" OR manor OR "castle hotel" OR retreat OR resort OR lodge OR cabin OR glamping OR treehouse OR "shepherd hut" OR hideaway OR "weekend escape" OR "city escape" OR holiday OR cruise OR "travel voucher")';
+  var holidayTerms='(holiday OR holidays OR "holiday voucher" OR "travel voucher" OR "city break" OR "European break" OR "weekend away" OR flight OR flights OR Jet2 OR TUI OR easyJet OR Ryanair OR cruise OR "mini-cruise" OR stateroom OR Eurostar OR ferry OR "airport lounge")';
+  var cashTerms='(cash OR "£500" OR "£1000" OR voucher OR "gift card" OR "gift voucher" OR "shopping spree" OR "shopping voucher" OR "prepaid card" OR "spending money" OR Tesco OR Sainsbury\'s OR Morrisons OR Asda OR Aldi OR Lidl)';
+  var techHomeTerms='(iPhone OR Samsung OR Galaxy OR Pixel OR smartphone OR phone OR iPad OR tablet OR MacBook OR laptop OR "gaming laptop" OR "OLED TV" OR QLED OR TV OR television OR soundbar OR projector OR "gaming monitor" OR ultrawide OR smartwatch OR headphones OR earbuds OR drone OR camera OR "action camera" OR "mirrorless camera" OR PS5 OR Xbox OR "Nintendo Switch" OR "Steam Deck" OR mattress OR "hybrid mattress" OR "memory foam" OR "orthopaedic mattress" OR bed OR "bed frame" OR vacuum OR "cordless vacuum" OR Dyson OR Shark OR Hoover OR appliance OR "coffee machine" OR "espresso machine" OR recliner OR armchair OR footstool OR ottoman OR "standing desk" OR "office chair" OR "ergonomic chair" OR air fryer)';
+  var localTerms='("dinner for two" OR "meal for two" OR "brunch for two" OR "bottomless brunch" OR "Sunday lunch" OR "roast dinner" OR "afternoon tea" OR restaurant OR "tasting menu" OR "chef\'s table" OR "cocktail masterclass" OR "wine tasting" OR "food tour" OR "cookery class" OR tickets OR "VIP tickets" OR guestlist OR "pair of tickets" OR "festival tickets" OR "concert tickets" OR "show tickets" OR theatre OR gig OR cinema)';
+  var railAttractionTerms='("train tickets" OR "rail travel" OR "train travel" OR "rail break" OR "first class" OR railcard OR Avanti OR LNER OR TransPennine OR "theme park" OR attraction OR Merlin OR "Pleasure Beach" OR zoo OR aquarium OR museum OR "VIP experience" OR "behind the scenes" OR "exclusive access" OR "private tour" OR "meet and greet" OR hospitality)';
+  var hiddenTerms='("anniversary giveaway" OR "birthday giveaway" OR "launch giveaway" OR "opening giveaway" OR "celebration giveaway" OR "milestone giveaway" OR "thank you giveaway" OR "follower giveaway" OR "to celebrate" OR "we\'re celebrating" OR "grand opening" OR "new opening" OR "soft launch" OR "brand launch")';
 
-  function tbsMarker(tbs){return tbs?' __TBS:'+tbs:''}
-  function freshAfter(){
-    var mode=document.getElementById('fresh').value;
-    if(mode==='d3')return tbsMarker('qdr:d3');
-    if(mode==='d7')return tbsMarker('qdr:w');
-    if(mode==='d14')return tbsMarker('qdr:w2');
-    if(mode==='d30')return tbsMarker('qdr:m');
-    return tbsMarker('qdr:d');
-  }
-  function deadlineAfter(){
-    var mode=document.getElementById('deadlineFresh').value;
-    if(mode==='d30')return tbsMarker('qdr:m');
-    if(mode==='d90')return tbsMarker('qdr:m3');
-    if(mode==='ytd'){
-      var y=new Date().getFullYear();
-      return tbsMarker('cdr:1,cd_min:01/01/'+y);
-    }
-    return tbsMarker('qdr:m2');
-  }
-  function dateParts(date){
-    var d=date.getDate(),m=date.getMonth()+1,y=date.getFullYear();
-    var yy=String(y).slice(-2);
-    return {
-      d:d,m:m,y:y,
-      dateSlash:pad2(d)+'/'+pad2(m),
-      dateSlashYear:pad2(d)+'/'+pad2(m)+'/'+y,
-      dateSlashShort:pad2(d)+'/'+pad2(m)+'/'+yy,
-      dateDash:pad2(d)+'-'+pad2(m),
-      dateLong:d+' '+monthName(m-1),
-      dateLongYear:d+' '+monthName(m-1)+' '+y,
-      dateOrdinal:d+ord(d)+' '+monthName(m-1),
-      dateShort:d+' '+monthShort(m-1),
-      weekday:['Sunday','Monday','Tuesday','Wednesday','Thursday','Friday','Saturday'][date.getDay()],
-      monthName:monthName(m-1)
-    };
-  }
-  function dateTerm(dp){
-    return '("'+dp.dateSlash+'" OR "'+dp.dateSlashYear+'" OR "'+dp.dateSlashShort+'" OR "'+dp.dateDash+'" OR "'+dp.dateShort+'" OR "'+dp.dateLong+'" OR "'+dp.dateLongYear+'" OR "'+dp.dateOrdinal+'")';
-  }
+  function tbs(t){return t?' __TBS:'+t:''}
+  function splitQuery(raw){var s=String(raw||'');var m=s.match(/\s*__TBS:([^\s]+)\s*$/);return {q:s.replace(/\s*__TBS:([^\s]+)\s*$/,'').trim(),tbs:m?m[1]:''}}
+  function readableTbs(v){var map={'qdr:d':'past 24h','qdr:d3':'past 3 days','qdr:w':'past week','qdr:w2':'past 2 weeks','qdr:m':'past month','qdr:m2':'past 2 months','qdr:m3':'past 3 months'};return map[v]||v}
+  function queryUrl(raw){var p=splitQuery(raw);var url='https://www.google.co.uk/search?q='+encodeURIComponent(p.q);if(p.tbs)url+='&tbs='+encodeURIComponent(p.tbs);if(document.getElementById('sortDate').checked)url+='&sbd=1';url+='&cr=countryUK&gl=uk&hl=en';return url}
+  function shortLabel(raw){var p=splitQuery(raw);var label=p.q.replace(/\s+/g,' ').trim();if(p.tbs)label+='  ['+readableTbs(p.tbs)+']';return label.slice(0,210)}
 
-  function igEnding(date,mode){
-    var dp=dateParts(date), tomorrow=dateParts(addDays(new Date(),1)), after=deadlineAfter();
-    var dates=dateTerm(dp);
-    var base=IG+' '+give+' ';
-    var q=[];
-    q.push(base+'("ends" OR "closes" OR "closing" OR "enter by" OR "entries close") '+dates+after);
+  function dateParts(date){var d=date.getDate(),m=date.getMonth()+1,y=date.getFullYear(),yy=String(y).slice(-2);return {
+    d:d,m:m,y:y,dateSlash:pad2(d)+'/'+pad2(m),dateSlashYear:pad2(d)+'/'+pad2(m)+'/'+y,dateSlashShort:pad2(d)+'/'+pad2(m)+'/'+yy,dateDash:pad2(d)+'-'+pad2(m),dateLong:d+' '+monthName(m-1),dateLongYear:d+' '+monthName(m-1)+' '+y,dateOrdinal:d+ord(d)+' '+monthName(m-1),dateShort:d+' '+monthShort(m-1),weekday:['Sunday','Monday','Tuesday','Wednesday','Thursday','Friday','Saturday'][date.getDay()],monthName:monthName(m-1)
+  }}
+  function dateTerm(dp){return '("'+dp.dateSlash+'" OR "'+dp.dateSlashYear+'" OR "'+dp.dateSlashShort+'" OR "'+dp.dateDash+'" OR "'+dp.dateShort+'" OR "'+dp.dateLong+'" OR "'+dp.dateLongYear+'" OR "'+dp.dateOrdinal+'")'}
+
+  function endingSearch(date,mode){
+    var dp=dateParts(date), dates=dateTerm(dp), recent=tbs('qdr:m2');
+    var endingWords='("ends" OR "closes" OR "closing" OR "enter by" OR "entries close" OR "drawn" OR "winner announced")';
     if(mode==='today'){
-      q.push(base+'("ends today" OR "closes today" OR "closing today" OR "last chance" OR "final chance" OR "last day to enter" OR "entries close tonight")'+after);
-      q.push(base+'("winner announced tomorrow" OR "winner drawn tomorrow" OR "winner chosen tomorrow")'+after);
-      q.push(base+'("ends tonight" OR "closes tonight" OR "drawn tonight")'+after);
-    } else {
-      q.push(base+'("ends tomorrow" OR "closes tomorrow" OR "closing tomorrow" OR "last chance tomorrow")'+after);
-      q.push(base+'("winner announced" OR "winner drawn" OR "winner chosen") '+dateTerm(tomorrow)+after);
+      return IG+' '+give+' '+auNeg+' ('+endingWords+' '+dates+' OR "ends today" OR "closes today" OR "closing today" OR "last chance" OR "final chance" OR "last day to enter" OR "entries close tonight" OR "ends tonight" OR "closes tonight" OR "winner announced tomorrow" OR "winner drawn tomorrow") '+ukSoft+recent;
     }
-    q.push(base+'(hotel OR "hotel stay" OR staycation OR spa OR suite OR holiday OR "city break") '+dates+after);
-    q.push(base+'(iPhone OR Samsung OR Galaxy OR Pixel OR MacBook OR laptop OR TV OR "OLED TV" OR iPad) '+dates+after);
-    q.push(base+'(cash OR voucher OR "gift card" OR "prepaid card") '+dates+after);
-    return q;
+    return IG+' '+give+' '+auNeg+' ('+endingWords+' '+dates+' OR "ends tomorrow" OR "closes tomorrow" OR "closing tomorrow" OR "last chance tomorrow" OR "winner announced" OR "winner drawn") '+ukSoft+recent;
   }
 
-  function categoryQueries(cat){
-    var after=freshAfter();
-    var coreCities='(London OR Edinburgh OR Liverpool OR York OR Leeds OR Sheffield OR Manchester OR Chester OR Birmingham OR Harrogate OR Bath OR Cambridge OR Oxford OR "Lake District" OR "Peak District" OR "North Wales" OR Scotland OR Wales)';
-    var northern='(Manchester OR Liverpool OR York OR Leeds OR Sheffield OR Chester OR Harrogate OR "Lake District" OR "Peak District" OR "North Wales" OR Birmingham)';
-    var stays='(hotel OR "hotel stay" OR "overnight stay" OR staycation OR suite OR spa OR "bed and breakfast" OR DBB OR "city break" OR "weekend break" OR "luxury stay" OR "boutique hotel" OR "country house hotel")';
-    var holidays='(holiday OR holidays OR "holiday voucher" OR "travel voucher" OR Jet2 OR TUI OR cruise OR "mini-cruise" OR flights OR "city break" OR Eurostar OR ferry OR "European break")';
-    var tech='(iPhone OR Samsung OR Galaxy OR Pixel OR smartphone OR phone OR iPad OR tablet OR MacBook OR laptop OR "OLED TV" OR "Samsung TV" OR "Sony TV" OR "LG TV" OR television)';
-    var cash='(cash OR "£" OR voucher OR "gift card" OR "gift voucher" OR "prepaid card" OR "shopping voucher" OR "spending money")';
-    var home='(mattress OR bed OR "bed frame" OR sofa OR furniture OR "home makeover" OR appliance OR Dyson OR Shark)';
-    var meals='("dinner for two" OR "meal for two" OR "brunch for two" OR "bottomless brunch" OR "afternoon tea" OR restaurant OR "tasting menu" OR tickets OR "pair of tickets" OR theatre OR gig OR cinema)';
-    var q=[];
-    if(cat==='stays' || cat==='travel'){
-      q.push(WEB+' '+give+' '+stays+' '+coreCities+' '+uk+' '+excludeSites+after);
-      q.push(IG+' '+give+' '+stays+' '+coreCities+' '+uk+after);
-      q.push(IG+' '+give+' '+stays+' (London OR Edinburgh OR Liverpool OR York OR Leeds OR Sheffield OR Manchester OR Chester)'+after);
-      q.push(IG+' '+give+' '+stays+' (luxury OR boutique OR spa OR suite OR "country house") '+coreCities+after);
-      q.push(WEB+' ("win" AROUND(3) ("hotel stay" OR staycation OR "overnight stay" OR "city break")) '+coreCities+' '+uk+' '+excludeSites+after);
-      q.push(IG+' ("London stay" OR "Edinburgh stay" OR "Liverpool hotel" OR "York hotel" OR "Leeds hotel" OR "Sheffield hotel" OR "Manchester hotel" OR "Chester hotel") '+give+after);
-    }
-    if(cat==='holidays' || cat==='travel'){
-      q.push(WEB+' '+give+' '+holidays+' '+uk+' '+excludeSites+after);
-      q.push(IG+' '+give+' '+holidays+' '+uk+after);
-      q.push(WEB+' ("win" AROUND(3) (holiday OR cruise OR flights OR "travel voucher" OR "city break")) '+uk+' '+excludeSites+after);
-      q.push(IG+' '+give+' (Jet2 OR TUI OR cruise OR "mini-cruise" OR "holiday voucher" OR "city break" OR Eurostar) '+uk+after);
-    }
-    if(cat==='north'){
-      q.push(IG+' '+give+' '+stays+' '+northern+after);
-      q.push(WEB+' '+give+' '+stays+' '+northern+' '+excludeSites+after);
-      q.push(IG+' ("Liverpool hotel" OR "York hotel" OR "Leeds hotel" OR "Sheffield hotel" OR "Chester hotel" OR "Manchester hotel" OR "Birmingham hotel") '+give+after);
-      q.push(WEB+' ("win" AROUND(4) ("hotel stay" OR staycation OR "overnight stay")) '+northern+' '+excludeSites+after);
-    }
-    if(cat==='cash'){
-      q.push(WEB+' '+give+' '+cash+' '+uk+' '+excludeSites+after);
-      q.push(IG+' '+give+' '+cash+' '+uk+after);
-      q.push(WEB+' (("win" OR "giveaway") AROUND(3) (cash OR voucher OR "gift card" OR "spending money")) '+uk+' '+excludeSites+after);
-    }
-    if(cat==='tech'){
-      q.push(WEB+' '+give+' '+tech+' '+uk+' '+excludeSites+after);
-      q.push(IG+' '+give+' '+tech+' '+uk+after);
-      q.push(WEB+' (("win" OR "giveaway") AROUND(3) (iPhone OR Samsung OR laptop OR MacBook OR "OLED TV" OR TV)) '+uk+' '+excludeSites+after);
-    }
-    if(cat==='home'){
-      q.push(WEB+' '+give+' '+home+' '+uk+' '+excludeSites+after);
-      q.push(IG+' '+give+' '+home+' '+uk+after);
-      q.push(WEB+' (("win" OR "giveaway") AROUND(3) (mattress OR bed OR sofa OR Dyson OR Shark)) '+uk+' '+excludeSites+after);
-    }
-    if(cat==='local'){
-      q.push(IG+' '+give+' '+meals+' '+northern+' '+noFootballNeg+after);
-      q.push(WEB+' '+give+' '+meals+' '+northern+' '+noFootballNeg+' '+excludeSites+after);
-      q.push(WEB+' ("win" AROUND(3) (tickets OR "pair of tickets" OR "dinner for two" OR "afternoon tea")) '+northern+' '+noFootballNeg+' '+excludeSites+after);
-    }
-    return q;
-  }
-
-  function datedQueries(scope,date){
-    var dp=dateParts(date),dates=dateTerm(dp),freshDeadline=deadlineAfter(),ends='("ends" OR "closing" OR "enter by" OR "closes" OR "entries close")';
-    var stays='(hotel OR "overnight stay" OR staycation OR suite OR spa OR "bed and breakfast" OR DBB OR "city break" OR holiday OR holidays OR cruise)';
-    var q=[];
-    if(scope==='ig'){
-      q.push(IG+' '+give+' '+ends+' '+dates+' '+uk+freshDeadline);
-      q.push(IG+' '+give+' '+stays+' '+ends+' '+dates+' '+uk+freshDeadline);
-      q.push(IG+' '+give+' (cash OR voucher OR "gift card" OR iPhone OR laptop OR TV OR mattress) '+ends+' '+dates+freshDeadline);
-    } else {
-      q.push(WEB+' '+give+' '+ends+' '+dates+' '+uk+' '+excludeSites+freshDeadline);
-      q.push(WEB+' '+give+' '+stays+' '+ends+' '+dates+' '+uk+' '+excludeSites+freshDeadline);
-      q.push(WEB+' ("Closing date:" OR "Closes:" OR "Closing date") * '+dp.monthName+' '+dp.y+' '+give+' '+uk+' '+excludeSites);
-      q.push(WEB+' ("Ends" OR "Enter by" OR "Entries close") * '+dp.monthName+' '+dp.y+' '+give+' '+uk+' '+excludeSites);
-    }
-    return q;
-  }
-
-  function igFresh(){return [IG+' '+give+' '+uk+freshAfter(),IG+' '+give+' (hotel OR staycation OR holiday OR cash OR voucher OR iPhone OR laptop OR TV OR mattress) '+uk+freshAfter()]}
-  function webFresh(){return [WEB+' '+give+' '+uk+' '+excludeSites+freshAfter()].concat(categoryQueries('stays'),categoryQueries('holidays'),categoryQueries('cash'),categoryQueries('tech'))}
-  function igWeekend(){var after=deadlineAfter();return [
-    IG+' '+give+' ("ends Sunday" OR "closes Sunday" OR "this Sunday" OR "this weekend" OR "weekend giveaway")'+after,
-    IG+' '+give+' ("winner announced Monday" OR "winner drawn Monday" OR "winner chosen Monday")'+after,
-    IG+' '+give+' (hotel OR staycation OR spa OR suite OR restaurant OR tickets) ("Sunday" OR "this weekend")'+after
-  ]}
+  function qTravel(){return IG+' '+give+' '+travelTerms+' '+ukPlaces+' '+auNeg+tbs('qdr:m')}
+  function qTravelWeb(){return WEB+' '+give+' '+travelTerms+' '+ukSoft+' '+ukPlaces+' '+excludeSites+' '+auNeg+tbs('qdr:m')}
+  function qHolidays(){return qTravelWeb()}
+  function qCash(){return IG+' '+give+' '+cashTerms+' '+ukSoft+' '+auNeg+tbs('qdr:w2')}
+  function qTechHome(){return IG+' '+give+' '+techHomeTerms+' '+ukSoft+' '+auNeg+tbs('qdr:m')}
+  function qLocal(){return IG+' '+give+' '+localTerms+' '+northPlaces+' '+noFootball+' '+auNeg+tbs('qdr:m')}
+  function qRailAttractions(){return IG+' '+give+' '+railAttractionTerms+' '+ukPlaces+' '+noFootball+' '+auNeg+tbs('qdr:m')}
+  function qHidden(){return IG+' '+hiddenTerms+' (giveaway OR competition OR win OR prize OR winner) '+ukPlaces+' '+auNeg+tbs('qdr:m')}
+  function qHiddenWeb(){return WEB+' '+hiddenTerms+' (giveaway OR competition OR win OR prize) '+ukSoft+' '+ukPlaces+' '+excludeSites+' '+auNeg+tbs('qdr:m')}
+  function qLowEntryLocal(){return IG+' '+hiddenTerms+' '+localTerms+' '+northPlaces+' '+auNeg+' '+noFootball+tbs('qdr:m')}
+  function qNew(){return IG+' '+give+' (hotel OR staycation OR holiday OR cash OR voucher OR iPhone OR laptop OR TV OR mattress OR Dyson OR Shark OR tickets OR "dinner for two") '+ukSoft+' '+auNeg+tbs('qdr:d3')}
+  function qWebNew(){return WEB+' '+give+' ('+travelTerms+' OR '+cashTerms+' OR '+techHomeTerms+') '+ukSoft+' '+ukPlaces+' '+excludeSites+' '+auNeg+tbs('qdr:w')}
+  function qManualDate(){var dp=dateParts(parseDateInput());return IG+' '+give+' ("ends" OR "closes" OR "closing" OR "enter by" OR "entries close") '+dateTerm(dp)+' '+ukSoft+' '+auNeg+tbs('qdr:m2')}
 
   function dailyQueue(){
-    // Ranked by Craig-value: deadlines first, then holidays/hotels, cash, tech, northern stays, mattress/home, local experiences, then broader fresh scans.
-    return []
-      .concat(igEnding(new Date(),'today'))
-      .concat(igEnding(addDays(new Date(),1),'tomorrow'))
-      .concat(categoryQueries('stays'))
-      .concat(categoryQueries('holidays'))
-      .concat(categoryQueries('cash'))
-      .concat(categoryQueries('tech'))
-      .concat(categoryQueries('north'))
-      .concat(igWeekend())
-      .concat(igFresh())
-      .concat(categoryQueries('home'))
-      .concat(categoryQueries('local'))
-      .concat(webFresh());
+    return [
+      endingSearch(new Date(),'today'),
+      endingSearch(addDays(new Date(),1),'tomorrow'),
+      qNew(),
+      qTravel(),
+      qCash(),
+      qTechHome(),
+      qHidden(),
+      qLocal()
+    ];
+  }
+  function quickQueue(which){
+    if(which==='today')return [endingSearch(new Date(),'today')];
+    if(which==='tomorrow')return [endingSearch(addDays(new Date(),1),'tomorrow')];
+    if(which==='travel')return [qTravel(),qTravelWeb(),qManualDate()];
+    if(which==='cash')return [qCash(),WEB+' '+give+' '+cashTerms+' '+ukSoft+' '+excludeSites+' '+auNeg+tbs('qdr:m')];
+    if(which==='techhome')return [qTechHome(),WEB+' '+give+' '+techHomeTerms+' '+ukSoft+' '+excludeSites+' '+auNeg+tbs('qdr:m')];
+    if(which==='local')return [qLocal(),qLowEntryLocal(),qRailAttractions()];
+    if(which==='rail')return [qRailAttractions(),WEB+' '+give+' '+railAttractionTerms+' '+ukPlaces+' '+noFootball+' '+excludeSites+' '+auNeg+tbs('qdr:m')];
+    if(which==='hidden')return [qHidden(),qLowEntryLocal(),qHiddenWeb()];
+    if(which==='new')return [qNew(),qWebNew()];
+    return dailyQueue();
   }
 
-  var input=document.getElementById('date');
-  input.value=toIsoDate(new Date());
+  function queueKey(label){var date=document.getElementById('date').value||toIsoDate(new Date());return 'compScoutQueue:'+VERSION+':'+label+':'+date}
+  function getQueuePos(label){return Number(localStorage.getItem(queueKey(label))||0)}
+  function setQueuePos(label,pos){localStorage.setItem(queueKey(label),String(pos))}
+  function saveActive(label,list,pos){localStorage.setItem('compScoutActive:'+VERSION,JSON.stringify({label:label,list:list,pos:pos||0,savedAt:Date.now()}));setQueuePos(label,pos||0)}
+  function getActive(){try{return JSON.parse(localStorage.getItem('compScoutActive:'+VERSION)||'null')}catch(e){return null}}
+  function resetQueue(label){localStorage.removeItem(queueKey(label));localStorage.removeItem('compScoutActive:'+VERSION)}
+  function dedupe(list){var seen={};return list.filter(function(q){var k=String(q).replace(/\s+/g,' ').trim();if(!k||seen[k])return false;seen[k]=true;return true})}
+  function loadQueue(list,label){list=dedupe(list);var pos=getQueuePos(label);if(pos>=list.length)pos=0;saveActive(label,list,pos);setStatus(label+': loaded. '+list.length+' search'+(list.length===1?'':'es')+'.');renderQueue()}
+  function renderQueue(){
+    var active=getActive(), el=document.getElementById('queueBox');
+    if(!active||!active.list||!active.list.length){el.innerHTML='<p class="small">No queue loaded yet. Load Today’s Queue or choose a Quick Access category.</p>';el.className='status show';return}
+    var list=active.list,pos=Number(active.pos||0);
+    if(pos>=list.length){el.innerHTML='<strong>'+esc(active.label)+': complete</strong><p class="small">Load another queue or reset this one to start again.</p>';el.className='status show';return}
+    var html='<div class="queue-meta">'+esc(active.label)+' — Search '+(pos+1)+' of '+list.length+'</div>';
+    html+='<div class="queue-current"><strong>Current:</strong><br><a href="'+esc(queryUrl(list[pos]))+'" target="_blank" rel="noopener">'+esc(shortLabel(list[pos]))+'</a></div>';
+    html+='<ol class="queue-list">';
+    list.forEach(function(q,i){var cls=i<pos?' class="queue-done"':(i===pos?' class="queue-current"':'');html+='<li'+cls+'><a href="'+esc(queryUrl(q))+'" target="_blank" rel="noopener">'+esc(shortLabel(q))+'</a></li>'});
+    html+='</ol>';el.innerHTML=html;el.className='status show';
+  }
+  function openCurrent(){var active=getActive();if(!active||!active.list||!active.list.length){setStatus('Load a queue first.');renderQueue();return}var pos=Number(active.pos||0);if(pos>=active.list.length){setStatus(active.label+': complete.');renderQueue();return}var w=window.open(queryUrl(active.list[pos]),'_blank');active.pos=pos+1;saveActive(active.label,active.list,active.pos);setStatus(active.label+': opened search '+(pos+1)+' of '+active.list.length+'.');renderQueue();if(!w)setStatus('Your browser may have blocked the tab. Use the current link in the visible queue.')}
+  function skipCurrent(){var active=getActive();if(!active||!active.list||!active.list.length){setStatus('Load a queue first.');renderQueue();return}var pos=Number(active.pos||0);if(pos<active.list.length){active.pos=pos+1;saveActive(active.label,active.list,active.pos);setStatus(active.label+': skipped search '+(pos+1)+'.')}renderQueue()}
+  function clearAll(){Object.keys(localStorage).forEach(function(k){if(k.indexOf('compScoutQueue:'+VERSION+':')===0||k==='compScoutActive:'+VERSION)localStorage.removeItem(k)});setStatus('Saved v6 queue progress cleared.');renderQueue()}
+
+  var input=document.getElementById('date');input.value=toIsoDate(new Date());
   document.getElementById('today').onclick=function(){input.value=toIsoDate(new Date())};
   document.getElementById('tomorrow').onclick=function(){input.value=toIsoDate(addDays(new Date(),1))};
-  document.getElementById('daily-next').onclick=function(){runQueries(dailyQueue(),'Daily Master Queue')};
+  document.getElementById('daily-load').onclick=function(){loadQueue(dailyQueue(),'Today’s Queue')};
   document.getElementById('open-current').onclick=openCurrent;
   document.getElementById('skip-current').onclick=skipCurrent;
-  document.getElementById('daily-reset').onclick=function(){resetQueue('Daily Master Queue');setStatus('Daily Master Queue reset. Next click starts from search 1.')};
-  document.getElementById('all-reset').onclick=clearAllProgress;
-
-  document.getElementById('ig-ending-today').onclick=function(){runQueries(igEnding(new Date(),'today'),'IG Ending Today')};
-  document.getElementById('ig-ending-tomorrow').onclick=function(){runQueries(igEnding(addDays(new Date(),1),'tomorrow'),'IG Ending Tomorrow')};
-  document.getElementById('ig-weekend').onclick=function(){runQueries(igWeekend(),'IG Weekend Closers')};
-  document.getElementById('travel-stays').onclick=function(){runQueries(categoryQueries('stays'),'Hotels & Stays')};
-  document.getElementById('holidays-cruises').onclick=function(){runQueries(categoryQueries('holidays'),'Holidays & Cruises')};
-  document.getElementById('cash-vouchers').onclick=function(){runQueries(categoryQueries('cash'),'Cash & Vouchers')};
-  document.getElementById('premium-tech').onclick=function(){runQueries(categoryQueries('tech'),'Premium Tech')};
-  document.getElementById('mattress-home').onclick=function(){runQueries(categoryQueries('home'),'Mattress & Home')};
-  document.getElementById('local-north').onclick=function(){runQueries(categoryQueries('north'),'Northern Stays')};
-  document.getElementById('local-experiences').onclick=function(){runQueries(categoryQueries('local'),'Meals & Experiences')};
-  document.getElementById('ig-fresh').onclick=function(){runQueries(igFresh(),'IG New')};
-  document.getElementById('web-fresh').onclick=function(){runQueries(webFresh(),'Web New')};
-  document.getElementById('web-dated').onclick=function(){runQueries(datedQueries('web',parseDateInput()),'Web Ends on Date')};
-  document.getElementById('ig-dated').onclick=function(){runQueries(datedQueries('ig',parseDateInput()),'IG Ends on Date')};
+  document.getElementById('daily-reset').onclick=function(){resetQueue('Today’s Queue');setStatus('Today’s Queue reset. Load it again to start from search 1.');renderQueue()};
+  document.getElementById('all-reset').onclick=clearAll;
+  document.getElementById('ending-today').onclick=function(){loadQueue(quickQueue('today'),'Ending Today')};
+  document.getElementById('ending-tomorrow').onclick=function(){loadQueue(quickQueue('tomorrow'),'Ending Tomorrow')};
+  document.getElementById('travel-breaks').onclick=function(){loadQueue(quickQueue('travel'),'Travel & Breaks')};
+  document.getElementById('cash-vouchers').onclick=function(){loadQueue(quickQueue('cash'),'Cash & Vouchers')};
+  document.getElementById('tech-home').onclick=function(){loadQueue(quickQueue('techhome'),'Tech & Home')};
+  document.getElementById('local-experiences').onclick=function(){loadQueue(quickQueue('local'),'Local Experiences')};
+  document.getElementById('rail-attractions').onclick=function(){loadQueue(quickQueue('rail'),'Rail & Attractions')};
+  document.getElementById('hidden-gems').onclick=function(){loadQueue(quickQueue('hidden'),'Hidden Gems')};
+  document.getElementById('new-finds').onclick=function(){loadQueue(quickQueue('new'),'New Finds')};
   renderQueue();
 })();
 </script>

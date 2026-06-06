@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
 <meta charset="utf-8">
-<title>Comp Scout — Giveaway Scanner (v5.3)</title>
+<title>Comp Scout — Giveaway Scanner (v5.5)</title>
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <style>
   :root{
@@ -40,11 +40,11 @@
   .subcard{border:1px solid var(--bd);border-radius:12px;padding:12px;background:#fff}
   .subcard.green{background:var(--green)}.subcard.blue{background:var(--blue)}.subcard.amber{background:var(--amber)}.subcard.pink{background:var(--pink)}
   .danger-note{font-weight:700;color:#991b1b}
-  .batch-list{margin:.4rem 0 0;padding-left:1.2rem}.batch-list li{margin:.35rem 0}.batch-list a{word-break:break-word}
+  .batch-list,.queue-list{margin:.4rem 0 0;padding-left:1.2rem}.batch-list li,.queue-list li{margin:.35rem 0}.batch-list a,.queue-list a{word-break:break-word}.queue-current{background:#fff7ed;border:1px solid #fed7aa;border-radius:10px;padding:8px}.queue-done{opacity:.48;text-decoration:line-through}.queue-meta{font-weight:700;margin:.35rem 0}.queue-actions{display:flex;gap:8px;flex-wrap:wrap;margin:.5rem 0}
 </style>
 </head>
 <body>
-  <h1>Comp Scout — Giveaway Scanner (v5.3)</h1>
+  <h1>Comp Scout — Giveaway Scanner (v5.5)</h1>
   <p class="small">Craig-friendly daily search flow: deadlines first, then hotels/stays, holidays/cruises, cash, tech, mattress/home and local prizes. Batch links always appear below in case your browser blocks tabs.</p>
 
   <div class="card workflow">
@@ -69,18 +69,19 @@
         <option value="d90">Past 3 months</option>
         <option value="ytd">This year</option>
       </select>
-      <label for="maxTabs">Max tabs per click:</label>
-      <input id="maxTabs" type="number" min="1" max="25" value="6">
+      <span style="display:none"><label for="maxTabs">Max tabs per click:</label>
+      <input id="maxTabs" type="number" min="1" max="25" value="1" style="display:none"></span>
       <label><input type="checkbox" id="sortDate" checked> Sort Google by date</label>
-      <label><input type="checkbox" id="confirmTabs" checked> Confirm before opening lots of tabs</label>
     </div>
     <p class="small"><strong>Freshness for new searches</strong> controls newly-posted comp searches. <strong>Deadline search age</strong> controls ending-today/tomorrow/date searches so old 2023/2024 posts are filtered out.</p>
     <div class="btns">
-      <button class="primary" id="daily-next">▶ Open next daily batch</button>
+      <button class="primary" id="daily-next">▶ Load daily queue</button>
+      <button class="hot" id="open-current">Open current search</button>
+      <button id="skip-current">Skip current</button>
       <button id="daily-reset">↺ Reset daily queue</button>
       <button id="all-reset">Clear all saved progress</button>
     </div>
-    <p class="small">Queue mode opens the next batch only, remembers where you got to and shows clickable backup links. With Max tabs set to 6, press the same button again for the next 6 searches.</p>
+    <p class="small">Queue mode now opens <strong>one tab at a time</strong>. Load a queue, then work through the visible list using Open current search or Skip current.</p>
     <div class="status" id="status"></div>
     <div class="status" id="batchLinks"></div>
   </div>
@@ -127,8 +128,8 @@
   </div>
 
   <div class="card">
-    <h2>What v5.3 adds</h2>
-    <p class="small"><span class="pill">Ending today</span><span class="pill">Ending tomorrow</span><span class="pill">Winner announced tomorrow</span><span class="pill">London/Edinburgh hotel stays</span><span class="pill">Northern hotel stays</span><span class="pill">Holidays/cruises</span><span class="pill">Mattresses</span><span class="pill">Premium tech</span><span class="pill">Cash/vouchers</span><span class="pill">Tab limit</span></p>
+    <h2>What v5.4 adds</h2>
+    <p class="small"><span class="pill">Ending today</span><span class="pill">Ending tomorrow</span><span class="pill">Winner announced tomorrow</span><span class="pill">London/Edinburgh hotel stays</span><span class="pill">Northern hotel stays</span><span class="pill">Holidays/cruises</span><span class="pill">Mattresses</span><span class="pill">Premium tech</span><span class="pill">Cash/vouchers</span><span class="pill">One-tab visible queue</span></p>
     <details>
       <summary>Search strategy</summary>
       <ul class="small">
@@ -138,7 +139,7 @@
         <li><strong>Holidays & Cruises</strong> covers UK-resident travel prizes, cruises, Jet2/TUI-style holidays, flights and city breaks.</li>
         <li><strong>Northern Stays</strong> prioritises Manchester, Liverpool, York, Leeds, Sheffield, Chester, Harrogate, the Lake District, the Peak District and North Wales.</li>
       </ul>
-      <p class="small danger-note">Deadline searches now add an age filter by default, so ending-today/tomorrow results should mostly come from the past couple of months instead of old competitions. Google can still ignore parts of searches, so treat results as a scout list rather than a perfect filter.</p>
+      <p class="small danger-note">Deadline searches use Google date filters by default, so ending-today/tomorrow results should mostly come from recent pages instead of old competitions. Queue mode opens one search at a time and visibly tracks your progress.</p>
     </details>
   </div>
 
@@ -153,60 +154,116 @@
   function parseDateInput(){var v=document.getElementById('date').value;if(!v)return new Date();var parts=v.split('-');return new Date(Number(parts[0]),Number(parts[1])-1,Number(parts[2]))}
   function setStatus(msg){var el=document.getElementById('status');el.textContent=msg;el.className='status show'}
 
-  function queryUrl(q){
-    var url='https://www.google.co.uk/search?q='+encodeURIComponent(q.trim());
+  function splitQuery(raw){
+    var q=String(raw||'');
+    var tbs='';
+    q=q.replace(/\s*__TBS:([^\s]+)\s*$/,'');
+    var m=String(raw||'').match(/__TBS:([^\s]+)\s*$/);
+    if(m)tbs=m[1];
+    return {q:q.trim(),tbs:tbs};
+  }
+  function queryUrl(raw){
+    var parts=splitQuery(raw);
+    var url='https://www.google.co.uk/search?q='+encodeURIComponent(parts.q);
+    if(parts.tbs) url+='&tbs='+encodeURIComponent(parts.tbs);
     if(document.getElementById('sortDate').checked) url+='&sbd=1';
     return url;
   }
-  function openQuery(q){
-    return window.open(queryUrl(q),'compScout_'+Date.now()+'_'+Math.random().toString(36).slice(2));
+  function shortLabel(raw){
+    var parts=splitQuery(raw);
+    var label=parts.q.replace(/\s+/g,' ').trim();
+    if(parts.tbs) label+='  ['+readableTbs(parts.tbs)+']';
+    return label.slice(0,190);
   }
-  function shortLabel(q){
-    return q.replace(/\s+/g,' ').trim().slice(0,140);
-  }
-  function showBatchLinks(chosen,label,pos){
-    var el=document.getElementById('batchLinks');
-    var html='<strong>'+label+': current batch links</strong><ol class="batch-list">';
-    chosen.forEach(function(q,i){
-      html+='<li><a href="'+queryUrl(q).replace(/"/g,'&quot;')+'" target="_blank" rel="noopener">Search '+(pos+i+1)+': '+shortLabel(q).replace(/&/g,'&amp;').replace(/</g,'&lt;')+'</a></li>';
-    });
-    html+='</ol><p class="small">If your browser only opens one tab, use these links to open the rest manually. Some mobile browsers limit multi-tab pop-ups.</p>';
-    el.innerHTML=html;
-    el.className='status show';
+  function readableTbs(tbs){
+    var map={'qdr:d':'past 24h','qdr:d3':'past 3 days','qdr:w':'past week','qdr:w2':'past 2 weeks','qdr:m':'past month','qdr:m2':'past 2 months','qdr:m3':'past 3 months','qdr:y':'past year'};
+    if(map[tbs])return map[tbs];
+    if(tbs.indexOf('cdr:1')===0)return 'custom date range';
+    return tbs;
   }
   function queueKey(label){
     var date=document.getElementById('date').value||toIsoDate(new Date());
     var fresh=document.getElementById('fresh').value;
-    return 'compScoutQueue:v53:'+label+':'+date+':'+fresh;
+    var deadline=document.getElementById('deadlineFresh').value;
+    return 'compScoutQueue:v55:'+label+':'+date+':'+fresh+':'+deadline;
   }
   function getQueuePos(label){return Number(localStorage.getItem(queueKey(label))||0)}
   function setQueuePos(label,pos){localStorage.setItem(queueKey(label),String(pos))}
-  function resetQueue(label){localStorage.removeItem(queueKey(label))}
-  function runQueries(list,label){
-    // De-dupe while preserving priority order.
-    list=list.filter(function(q,i,a){return q && a.indexOf(q)===i});
-    var max=Number(document.getElementById('maxTabs').value)||6;
-    var pos=getQueuePos(label);
-    if(pos>=list.length){pos=0;setQueuePos(label,0);}
-    var chosen=list.slice(pos,pos+max);
-    var nextPos=pos+chosen.length;
-    var done=nextPos>=list.length;
-    if(!chosen.length){setStatus(label+': queue complete. Press again to restart from the beginning.');setQueuePos(label,0);return;}
-    var msg=label+': opening '+chosen.length+' search'+(chosen.length===1?'':'es')+' ('+(pos+1)+'–'+nextPos+' of '+list.length+').';
-    if(done) msg+=' Queue complete after this batch.'; else msg+=' Press the same button again for the next '+Math.min(max,list.length-nextPos)+'.';
-    setStatus(msg);
-    showBatchLinks(chosen,label,pos);
-    if(document.getElementById('confirmTabs').checked && chosen.length>4){
-      if(!confirm('Open '+chosen.length+' tabs for '+label+'?')) return;
+  function resetQueue(label){localStorage.removeItem(queueKey(label));localStorage.removeItem('compScoutActive:v55')}
+  function saveActive(label,list,pos){
+    localStorage.setItem('compScoutActive:v55',JSON.stringify({label:label,list:list,pos:pos||0,savedAt:Date.now()}));
+    setQueuePos(label,pos||0);
+  }
+  function getActive(){
+    try{return JSON.parse(localStorage.getItem('compScoutActive:v55')||'null')}catch(e){return null}
+  }
+  function escapeHtml(str){return String(str).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;')}
+  function renderQueue(){
+    var active=getActive();
+    var el=document.getElementById('batchLinks');
+    if(!active||!active.list||!active.list.length){
+      el.innerHTML='<p class="small">No queue loaded yet. Choose Daily Queue or one of the category buttons.</p>';
+      el.className='status show';
+      return;
     }
-    var opened=0, blocked=0;
-    chosen.forEach(function(q){var w=openQuery(q); if(w){opened++;} else {blocked++;}});
-    if(blocked>0){setStatus(msg+' '+blocked+' tab(s) may have been blocked. Use the batch links below.');}
-    setQueuePos(label,done?0:nextPos);
+    var list=active.list, pos=Number(active.pos||0);
+    if(pos>=list.length){
+      el.innerHTML='<strong>'+escapeHtml(active.label)+': complete</strong><p class="small">Reload this queue to start again, or choose another category.</p>';
+      el.className='status show';
+      return;
+    }
+    var current=list[pos];
+    var html='<div class="queue-meta">'+escapeHtml(active.label)+' — Search '+(pos+1)+' of '+list.length+'</div>';
+    html+='<div class="queue-current"><strong>Current:</strong><br><a href="'+escapeHtml(queryUrl(current))+'" target="_blank" rel="noopener">'+escapeHtml(shortLabel(current))+'</a></div>';
+    html+='<p class="small">Use <strong>Open current search</strong> to open one Google tab and move to the next item. The full queue is below so you can see exactly what is coming up.</p>';
+    html+='<ol class="queue-list">';
+    list.forEach(function(q,i){
+      var cls=i<pos?' class="queue-done"':(i===pos?' class="queue-current"':'');
+      html+='<li'+cls+'><a href="'+escapeHtml(queryUrl(q))+'" target="_blank" rel="noopener">'+escapeHtml(shortLabel(q))+'</a></li>';
+    });
+    html+='</ol>';
+    el.innerHTML=html;
+    el.className='status show';
+  }
+  function runQueries(list,label){
+    var seen={};
+    list=list.filter(function(q){
+      if(!q)return false;
+      var key=String(q).replace(/\s+/g,' ').trim();
+      if(seen[key])return false;
+      seen[key]=true;
+      return true;
+    });
+    var pos=getQueuePos(label);
+    if(pos>=list.length)pos=0;
+    saveActive(label,list,pos);
+    setStatus(label+': queue loaded. Open one search at a time.');
+    renderQueue();
+  }
+  function openCurrent(){
+    var active=getActive();
+    if(!active||!active.list||!active.list.length){setStatus('Load a queue first.');renderQueue();return;}
+    var pos=Number(active.pos||0), list=active.list;
+    if(pos>=list.length){setStatus(active.label+': complete. Load a queue to start again.');renderQueue();return;}
+    var q=list[pos];
+    var w=window.open(queryUrl(q),'_blank');
+    active.pos=pos+1;
+    saveActive(active.label,list,active.pos);
+    setStatus(active.label+': opened search '+(pos+1)+' of '+list.length+'.');
+    renderQueue();
+    if(!w){setStatus(active.label+': your browser may have blocked the tab. Use the current link in the visible queue.');}
+  }
+  function skipCurrent(){
+    var active=getActive();
+    if(!active||!active.list||!active.list.length){setStatus('Load a queue first.');renderQueue();return;}
+    var pos=Number(active.pos||0);
+    if(pos<active.list.length){active.pos=pos+1;saveActive(active.label,active.list,active.pos);setStatus(active.label+': skipped search '+(pos+1)+'.');}
+    renderQueue();
   }
   function clearAllProgress(){
-    Object.keys(localStorage).forEach(function(k){if(k.indexOf('compScoutQueue:v53:')===0)localStorage.removeItem(k)});
+    Object.keys(localStorage).forEach(function(k){if(k.indexOf('compScoutQueue:v55:')===0||k==='compScoutActive:v55')localStorage.removeItem(k)});
     setStatus('All saved queue progress cleared.');
+    renderQueue();
   }
 
   var excludeSites=[
@@ -220,16 +277,24 @@
   var IG='site:instagram.com';
   var WEB='';
 
+  function tbsMarker(tbs){return tbs?' __TBS:'+tbs:''}
   function freshAfter(){
-    var mode=document.getElementById('fresh').value,days=1;
-    if(mode==='d3')days=3;else if(mode==='d7')days=7;else if(mode==='d14')days=14;else if(mode==='d30')days=30;
-    return ' after:'+toIsoDate(addDays(new Date(),-(days-1)));
+    var mode=document.getElementById('fresh').value;
+    if(mode==='d3')return tbsMarker('qdr:d3');
+    if(mode==='d7')return tbsMarker('qdr:w');
+    if(mode==='d14')return tbsMarker('qdr:w2');
+    if(mode==='d30')return tbsMarker('qdr:m');
+    return tbsMarker('qdr:d');
   }
   function deadlineAfter(){
     var mode=document.getElementById('deadlineFresh').value;
-    var days=60;
-    if(mode==='d30')days=30;else if(mode==='d90')days=90;else if(mode==='ytd')return ' after:'+new Date().getFullYear()+'-01-01';
-    return ' after:'+toIsoDate(addDays(new Date(),-(days-1)));
+    if(mode==='d30')return tbsMarker('qdr:m');
+    if(mode==='d90')return tbsMarker('qdr:m3');
+    if(mode==='ytd'){
+      var y=new Date().getFullYear();
+      return tbsMarker('cdr:1,cd_min:01/01/'+y);
+    }
+    return tbsMarker('qdr:m2');
   }
   function dateParts(date){
     var d=date.getDate(),m=date.getMonth()+1,y=date.getFullYear();
@@ -373,6 +438,8 @@
   document.getElementById('today').onclick=function(){input.value=toIsoDate(new Date())};
   document.getElementById('tomorrow').onclick=function(){input.value=toIsoDate(addDays(new Date(),1))};
   document.getElementById('daily-next').onclick=function(){runQueries(dailyQueue(),'Daily Master Queue')};
+  document.getElementById('open-current').onclick=openCurrent;
+  document.getElementById('skip-current').onclick=skipCurrent;
   document.getElementById('daily-reset').onclick=function(){resetQueue('Daily Master Queue');setStatus('Daily Master Queue reset. Next click starts from search 1.')};
   document.getElementById('all-reset').onclick=clearAllProgress;
 
@@ -390,6 +457,7 @@
   document.getElementById('web-fresh').onclick=function(){runQueries(webFresh(),'Web New')};
   document.getElementById('web-dated').onclick=function(){runQueries(datedQueries('web',parseDateInput()),'Web Ends on Date')};
   document.getElementById('ig-dated').onclick=function(){runQueries(datedQueries('ig',parseDateInput()),'IG Ends on Date')};
+  renderQueue();
 })();
 </script>
 </body>
